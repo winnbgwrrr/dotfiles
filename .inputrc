@@ -1,0 +1,9 @@
+# .inputrc
+
+set editing-mode vi
+set show-all-if-ambiguous on
+set completion-ignore-case on
+
+set keymap vi-insert
+"\e[A": history-search-backward
+"\e[B": history-search-forward
