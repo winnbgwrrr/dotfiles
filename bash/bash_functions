@@ -1,0 +1,297 @@
+
+_new_script() {
+  local snm ps
+  snm=${1:?}
+  ps='_print_spaces'
+  cp $HOME/.boiler_plate_sh "$snm"
+  sed -i "s/\(^# Script:$\)/\1   $snm$($ps $((67-${#snm})))#/" "$snm"
+  sed -i "s/\(^# Usage:$\)/\1    $snm [-h]$($ps $((62-${#snm})))#/" "$snm"
+  sed -i "s/\(^# Date written:$\)/\1 $(printf '%(%m-%d-%Y)T')$($ps 53)#/" "$snm"
+  sed -i "s/^# START/# $snm START/" "$snm"
+  chmod 750 "$snm"
+}
+
+_documentation_review() {
+  redmine_url='https://cfrmprd02v.psb.bls.gov/issues'
+  _git_changes
+  read -p 'If you need to download docs from SCR, enter SCR number: ' scr_no
+  [ -n "$scr_no" ] && printf '\n%s\n' "$redmine_url/$scr_no"
+}
+
+_ps1_branch() {
+  git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+
+_new_script() {
+  local snm
+  snm=${1:?}
+  [ -f "$snm" ] && { _print_error '%s\n' "$snm already exists"; return 1; }
+  cp $HOME/.local/share/templates/boiler_plate.sh "$snm"
+  sed -i "s/\(^# Script:   \) \{${#snm}\}/\1$snm/" "$snm"
+  sed -i "s/\(^# Usage:    \) \{${#snm}\}/\1$snm [-h]/" "$snm"
+  sed -i "s/\(^# Date written: \)/\1$(date '+%m-%d-%Y')/" "$snm"
+  sed -i "s/^# START/# $snm START/" "$snm"
+  chmod 750 "$snm"
+}
+
+_notes() {
+  local usrin lastopt
+  printf '%s\n' 'NOTES'
+  declare -a optslist
+  optslist=('Select one of the following options:')
+  optslist+=('rconnect')
+  optslist+=('ssh cat')
+  optslist+=('change shell')
+  optslist+=('sed block')
+  optslist+=('open ssl')
+  optslist+=('shuf')
+  optslist+=('passwd expiration')
+  optslist+=('tmux pane formats')
+  optslist+=('open history in vim')
+  optslist+=('run command in history')
+  optslist+=('output command in history')
+  _display_menu "${optslist[@]}"
+  lastopt=$((${#optslist[@]}-1))
+  read -p "Enter Choice [1-$lastopt] " usrin
+  tput setaf '2'
+  case "$usrin" in
+    1)
+      printf '\n\t%s\n' '%let tcersch = tcersch tcersch_sas94spawn;'
+      printf '\t%s\n' 'signon remote=tcersch user=<rsch_username> password=_prompt_;'
+      printf '\t%s\n\n' 'signoff;'
+      ;;
+    2)
+      printf '\n\t%s\n\n' '<<stdout>> | ssh usr@srv "cat > <file>"'
+      ;;
+    3)
+      printf '\n\t%s\n\n' 'chsh -s /bin/bash'
+      ;;
+    4)
+      printf '\n\t%s\n\n' "sed -n '/<begin>/,/<end>/p' <file>"
+      ;;
+    5)
+      printf '\n\t%s\n' 'openssl genrsa -out ~/.ssl/id_rsa 4096'
+      printf '\t%s\n' 'openssl rsa -in ~/.ssl/id_rsa -pubout -out ~/.ssl/id_rsa.pub'
+      printf '\t%s\n' 'echo "<secret>" | openssl rsautl -encrypt -inkey ~/.ssl/rsa_key.pub -pubin -out <encrypted.file>'
+      printf '\t%s\n\n' 'openssl rsautl -decrypt -inkey ~/.ssl/id_rsa -in <encrypted.file>'
+      ;;
+    6)
+      printf '\n\t%s\n\n' "shuf -n <file> ><output>"
+      ;;
+    7)
+      printf '\n\t%s' "chage -l \$USER"
+      printf '\n\t%s\n\n' "SELECT username, expiry_date FROM dba_users WHERE username = '<username>';"
+      ;;
+    8)
+      printf '\n\t%s\n\n' "tmux list-panes -F '#{pane_index} #{pane_active} #{pane_pid}'"
+      ;;
+    9)
+      printf '\n\t%s\n\n' "fc <num> [num]"
+      ;;
+    10)
+      printf '\n\t%s\n\n' "!<!|num>"
+      ;;
+    11)
+      printf '\n\t%s\n\n' "history -p \!<num>"
+      ;;
+    [Qq]*)
+      echo
+      ;;
+    *)
+      echo
+      _print_error '%s\n' "$usrin $NOT_RECOGNIZED_OPTION"
+      ;;
+  esac
+  tput setaf '7'
+}
+
+_display_sas_dataset() {
+  python3.11 ~/lib/sas7bdat-to-csv.py "${1:?}"
+}
+
+_display_sas_catalog() {
+  local catalog dir file_name temp_dir
+  catalog="${1:?}"
+  dir=${catalog%/*}
+  file_name=${catalog##*/}
+  file_name=$(basename $file_name .sas7bcat)
+  temp_dir=$(mktemp -d)
+  sas ~/lib/sas7bcat-to-csv.sas -initstmt \
+    "%let dir=$dir; %let file_name=$file_name; %let temp_dir=$temp_dir;" \
+    -log $temp_dir/bcat-to-csv.log
+  python3.11 ~/lib/sas7bdat-to-csv.py $temp_dir/$file_name.sas7bdat
+  rm -r $temp_dir
+}
+
+_explore_window() {
+  tmux new-window -n search
+  tmux split-window -bh -p 30 -t search \
+    'source ~/.bashrc; _explore; tmux kill-window'
+  tmux split-window -l 1 -t search.1
+  tmux send-keys -t search.1 'unset PS1' C-m 'clear' C-m
+  tmux send-keys -t search.2 'unset PS1' C-m 'clear' C-m
+  tmux select-pane -dt search.2
+  tmux select-pane -t search.0
+}
+
+_explore() {
+  local usrin lastopt sel message
+  declare -A search_categories
+  declare -a optslist
+  search_categories["Driver Files"]='jobsub/driver'
+  search_categories["XML Files"]='jobsub/xml'
+  search_categories["Source Code"]='system/source'
+  search_categories["Logs and Lists"]='jobio/logs_lists'
+  search_categories["Data Dictionaries"]='jobio/datadict'
+  search_categories["Datafiles"]='jobio/datafiles'
+  search_categories["Formats"]='jobio/formats'
+  optslist=('Select one of the following categories:')
+  for o in "${!search_categories[@]}"; do
+    if [ -d "${search_categories[$o]}" ] &&
+      [ -n "$(ls -A ${search_categories[$o]})" ]
+      then
+      optslist+=("$o")
+    else
+      unset search_categories["$o"]
+    fi
+  done
+  if [ ${#search_categories[@]} -eq 0 ]; then
+    _find_and_display_file "$PWD" && { _explore; return 0; } || return 1
+  fi
+  optslist+=('Current Working Directory')
+  optslist+=('Quit')
+  clear
+  _display_menu "${optslist[@]}"
+  lastopt=$((${#optslist[@]}-1))
+  read -p "Enter Choice [1-$lastopt] " usrin
+  case "$usrin" in
+    $lastopt|[Qq]*)
+      return 0
+      ;;
+    $(($lastopt-1)))
+      _find_and_display_file "$PWD" && { _explore; return 0; } || return 1
+      ;;
+    *)
+      if ! _int_test "$usrin" || [ -z "${optslist[$usrin]}" ]; then
+        _display_error "$usrin $NOT_RECOGNIZED_OPTION" || return 2
+      else
+        _find_and_display_file "${search_categories[${optslist[$usrin]}]}" ||
+          return 1
+      fi
+      ;;
+  esac
+  _explore
+}
+
+_find_and_display_file() {
+  local dir path cmd
+  dir="${1:?}"
+  cd $dir
+  path=$dir/$(find * -maxdepth 4 -not -path '*/.?*/*' | fzf) || return 1
+  tmux send-keys -t search.2 'clear' C-m
+  cd -
+  if [ -d "$path" ]; then
+    _find_and_display_file "$path"
+    return $?
+  fi
+  case "$path" in
+    *.log)
+      echo "less -S -p ^ERROR: $path"
+      ;;
+    *.sas|*.sh)
+      echo "vim -b $path"
+      ;;
+    *.sas7bdat)
+      echo "_display_sas_dataset $path | column -t -s ',' | less -S"
+      ;;
+    *.sas7bcat)
+      echo "_display_sas_catalog $path | column -t -s ',' | less -S"
+      ;;
+    *.json)
+      echo "jq '.' $path | less -S"
+      ;;
+    *.zip|*.gz)
+      echo "less -S $path"
+      ;;
+    *)
+      if file $(realpath $path) | grep -q 'text'; then
+        echo "less -S $path"
+      else
+        _display_error "$path is not a text file"
+        return $?
+      fi
+      ;;
+  esac | xargs -I {} tmux respawn-pane -kt search.1 \
+    "bash -c 'source ~/.bashrc; {}'"
+}
+
+_debug() {
+  pane_tty=$(tmux list-panes -t search -a -F '#I #{pane_index} #{pane_tty}' |
+    grep '^0 0 ' | sed 's/^0 0 //')
+  [ -z "$pane_tty" ] && return 1
+  printf '\n%s\n' "${1:?}" >$pane_tty
+}
+
+_display_error() {
+  pane_tty=$(tmux list-panes -t search -F '#{pane_index} #{pane_tty}' |
+    grep '^2 ' | sed 's/^2 //')
+  [ -z "$pane_tty" ] && return 1
+  printf '\n%s%s%s\n' "$(tput setaf 1)" "${1:?}" "$(tput setaf 7)" >$pane_tty
+}
+
+_reset_prompt() {
+  local n
+  n=${PS1@P}
+  n=${n//[^$'\n']}
+  n=${#n}
+  tput cuu $((n + 1))
+  tput ed
+}
+
+_home() {
+  if [ -z "$TMUX" ]; then
+    cd ~
+  else
+    cd ${workspaces[$(tmux display-message -p '#W')]}
+  fi
+}
+
+_remote_connect() {
+  local session_name destination ssh_cmd
+  session_name="${1:?}"
+  shift
+  destination="${1:?}"
+  shift
+  ssh_cmd="ssh -q $destination -t 'tmux new -As $session_name'"
+  if [ "$1" = '--split-window' ]; then
+    shift
+    tmux split-window "$@" "$ssh_cmd"
+  else
+    eval "$ssh_cmd"
+  fi
+}
+
+_tmux_window() {
+  local arg
+  arg="${1:?}"
+  [ -z "${workspaces[$arg]}" ] && return 1
+  if [ -z "$TMUX" ]; then
+    cd "${workspaces[$arg]}"
+  else
+    tmux select-window -t "$arg" 2>/dev/null ||
+      tmux new-window -n "$arg" -c "${workspaces[$arg]}"
+  fi
+}
+
+_exit() {
+  [ -z "$TMUX" ] && exit
+  if [ $(tmux list-panes | wc -l) -gt 1 ]; then
+    tmux kill-pane
+  else
+    if [ $(tmux display-message -p '#I') -gt 0 ]; then
+      tmux kill-window
+    else
+      tmux detach
+    fi
+  fi
+}
