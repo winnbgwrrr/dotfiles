@@ -1,0 +1,33 @@
+# Abbreviations
+alias lst='ls -lt'
+alias lstd='ls -ltd'
+alias lat='ls -alt'
+alias rp='realpath'
+alias vi='vim'
+alias new='tmux new -As cachy'
+alias pv='[ -z "$TMUX" ] || tmux split-window -v'
+alias ph='[ -z "$TMUX" ] || tmux split-window -h'
+
+# Sudo
+alias pacman='sudo pacman'
+
+# Workspaces
+alias work='_tmux_window work'
+alias bin='_tmux_window bin'
+alias scripts='_tmux_window scripts'
+alias configs='_tmux_window dotfiles'
+
+# Functions
+alias newsh='_new_script'
+
+# Scripts
+alias pw='passwordmanager.sh'
+alias search='search.sh'
+
+# Git
+alias pull='_git_pull'
+alias push='_git_push'
+
+# Remote
+alias mini='_remote_connect mini R-Mini-s'
+alias minip='_remote_connect mini R-Mini-s --split-window -h'
