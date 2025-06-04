@@ -1,9 +1,15 @@
 # .inputrc
 
 set editing-mode vi
+set show-mode-in-prompt on
+set vi-cmd-mode-string <
+set vi-ins-mode-string >
 set show-all-if-ambiguous on
 set completion-ignore-case on
-
 set keymap vi-insert
+
 "\e[A": history-search-backward
 "\e[B": history-search-forward
+"\C-x": 'tmux kill-session\n'
+"\C-h": '_home;_reset_prompt\n'
+"\C-e": '_explore_window;_reset_prompt\n'

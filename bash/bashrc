@@ -1,0 +1,23 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+  . /etc/bashrc
+fi
+
+shopt -s autocd
+
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+declare -A workspaces
+
+# Set up fzf key bindings and fuzzy completion
+eval "$(fzf --bash)"
+
+if [ -f ~/dotfiles/bash_functions ]; then
+  . ~/dotfiles/bash_functions
+fi
+
+if [ -f ~/dotfiles/bash_aliases ]; then
+  . ~/dotfiles/bash_aliases
+fi

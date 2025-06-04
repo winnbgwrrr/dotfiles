@@ -1,26 +1,4 @@
-
-_new_script() {
-  local snm ps
-  snm=${1:?}
-  ps='_print_spaces'
-  cp $HOME/.boiler_plate_sh "$snm"
-  sed -i "s/\(^# Script:$\)/\1   $snm$($ps $((67-${#snm})))#/" "$snm"
-  sed -i "s/\(^# Usage:$\)/\1    $snm [-h]$($ps $((62-${#snm})))#/" "$snm"
-  sed -i "s/\(^# Date written:$\)/\1 $(printf '%(%m-%d-%Y)T')$($ps 53)#/" "$snm"
-  sed -i "s/^# START/# $snm START/" "$snm"
-  chmod 750 "$snm"
-}
-
-_documentation_review() {
-  redmine_url='https://cfrmprd02v.psb.bls.gov/issues'
-  _git_changes
-  read -p 'If you need to download docs from SCR, enter SCR number: ' scr_no
-  [ -n "$scr_no" ] && printf '\n%s\n' "$redmine_url/$scr_no"
-}
-
-_ps1_branch() {
-  git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
-}
+# .bash_functions
 
 _new_script() {
   local snm
@@ -34,12 +12,15 @@ _new_script() {
   chmod 750 "$snm"
 }
 
+_ps1_branch() {
+  git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+
 _notes() {
   local usrin lastopt
   printf '%s\n' 'NOTES'
   declare -a optslist
   optslist=('Select one of the following options:')
-  optslist+=('rconnect')
   optslist+=('ssh cat')
   optslist+=('change shell')
   optslist+=('sed block')
@@ -56,42 +37,37 @@ _notes() {
   tput setaf '2'
   case "$usrin" in
     1)
-      printf '\n\t%s\n' '%let tcersch = tcersch tcersch_sas94spawn;'
-      printf '\t%s\n' 'signon remote=tcersch user=<rsch_username> password=_prompt_;'
-      printf '\t%s\n\n' 'signoff;'
-      ;;
-    2)
       printf '\n\t%s\n\n' '<<stdout>> | ssh usr@srv "cat > <file>"'
       ;;
-    3)
+    2)
       printf '\n\t%s\n\n' 'chsh -s /bin/bash'
       ;;
-    4)
+    3)
       printf '\n\t%s\n\n' "sed -n '/<begin>/,/<end>/p' <file>"
       ;;
-    5)
+    4)
       printf '\n\t%s\n' 'openssl genrsa -out ~/.ssl/id_rsa 4096'
       printf '\t%s\n' 'openssl rsa -in ~/.ssl/id_rsa -pubout -out ~/.ssl/id_rsa.pub'
       printf '\t%s\n' 'echo "<secret>" | openssl rsautl -encrypt -inkey ~/.ssl/rsa_key.pub -pubin -out <encrypted.file>'
       printf '\t%s\n\n' 'openssl rsautl -decrypt -inkey ~/.ssl/id_rsa -in <encrypted.file>'
       ;;
-    6)
+    5)
       printf '\n\t%s\n\n' "shuf -n <file> ><output>"
       ;;
-    7)
+    6)
       printf '\n\t%s' "chage -l \$USER"
       printf '\n\t%s\n\n' "SELECT username, expiry_date FROM dba_users WHERE username = '<username>';"
       ;;
-    8)
+    7)
       printf '\n\t%s\n\n' "tmux list-panes -F '#{pane_index} #{pane_active} #{pane_pid}'"
       ;;
-    9)
+    8)
       printf '\n\t%s\n\n' "fc <num> [num]"
       ;;
-    10)
+    9)
       printf '\n\t%s\n\n' "!<!|num>"
       ;;
-    11)
+    10)
       printf '\n\t%s\n\n' "history -p \!<num>"
       ;;
     [Qq]*)
@@ -103,24 +79,6 @@ _notes() {
       ;;
   esac
   tput setaf '7'
-}
-
-_display_sas_dataset() {
-  python3.11 ~/lib/sas7bdat-to-csv.py "${1:?}"
-}
-
-_display_sas_catalog() {
-  local catalog dir file_name temp_dir
-  catalog="${1:?}"
-  dir=${catalog%/*}
-  file_name=${catalog##*/}
-  file_name=$(basename $file_name .sas7bcat)
-  temp_dir=$(mktemp -d)
-  sas ~/lib/sas7bcat-to-csv.sas -initstmt \
-    "%let dir=$dir; %let file_name=$file_name; %let temp_dir=$temp_dir;" \
-    -log $temp_dir/bcat-to-csv.log
-  python3.11 ~/lib/sas7bdat-to-csv.py $temp_dir/$file_name.sas7bdat
-  rm -r $temp_dir
 }
 
 _explore_window() {
@@ -138,13 +96,7 @@ _explore() {
   local usrin lastopt sel message
   declare -A search_categories
   declare -a optslist
-  search_categories["Driver Files"]='jobsub/driver'
-  search_categories["XML Files"]='jobsub/xml'
-  search_categories["Source Code"]='system/source'
-  search_categories["Logs and Lists"]='jobio/logs_lists'
-  search_categories["Data Dictionaries"]='jobio/datadict'
-  search_categories["Datafiles"]='jobio/datafiles'
-  search_categories["Formats"]='jobio/formats'
+#  search_categories["Menu Opt"]='path'
   optslist=('Select one of the following categories:')
   for o in "${!search_categories[@]}"; do
     if [ -d "${search_categories[$o]}" ] &&
@@ -237,6 +189,20 @@ _display_error() {
     grep '^2 ' | sed 's/^2 //')
   [ -z "$pane_tty" ] && return 1
   printf '\n%s%s%s\n' "$(tput setaf 1)" "${1:?}" "$(tput setaf 7)" >$pane_tty
+}
+
+_fzf_vim() {
+  local top_dir path
+  top_dir=${1:-$HOME}
+  path=$(find $HOME -type f -not -path '*/.git' | fzf)
+  if file $(realpath $path) |
+    grep -qe 'text' -e 'Zip archive' -e 'gzip compressed'
+  then
+    vim -b $path
+  else
+    _print_error "$path is not a text file"
+    return 1
+  fi
 }
 
 _reset_prompt() {
