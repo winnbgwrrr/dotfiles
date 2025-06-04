@@ -1,0 +1,10 @@
+# .bash_profile
+
+test -f ~/.profile && . ~/.profile
+test -f ~/.bashrc && . ~/.bashrc
+
+PS1="\n\u@\h \[\033[0;35m\]\$PWD\[\033[0;32m\]\$(_ps1_branch)\[\033[0;0m\]\n$ "
+
+export PATH=".:$HOME/bin:$PATH"
+export EDITOR='/usr/bin/vim'
+export TERM='xterm-256color'

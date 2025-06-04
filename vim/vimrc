@@ -10,6 +10,9 @@ set hlsearch
 
 syntax on
 
+colorscheme wildcharm
+"colorscheme elflord
+
 if has('autocmd')
    autocmd Filetype makefile setlocal noexpandtab
    autocmd FileType xml setlocal indentexpr=

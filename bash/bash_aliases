@@ -1,0 +1,27 @@
+# .bash_aliases
+
+# Commands
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias lat='ls -lat'
+alias lst='ls -lt'
+alias lstd='ls -ltd'
+alias rp='realpath'
+alias vi='vim -b'
+
+# Workspaces
+
+# Functions
+alias notes='_notes'
+alias newsh='_new_script'
+alias exit='_exit'
+alias gf='_grep_finder'
+alias fvi='_fzf_vim'
+alias gpull='_git_pull'
+alias gpush='_git_push'
+alias gbs='_git_branch_selector'
+
+# Git
+alias gl='git log --pretty=oneline'
+alias gll='git log -1 --pretty=oneline'
