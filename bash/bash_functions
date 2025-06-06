@@ -194,7 +194,8 @@ _display_error() {
 _fzf_vim() {
   local top_dir path
   top_dir=${1:-$HOME}
-  path=$(find $HOME -type f -not -path '*/.git' | fzf)
+  path=$(find $top_dir -type f -not -path '*/.git' | fzf)
+  [ -z "$path" ] && return 0
   if file $(realpath $path) |
     grep -qe 'text' -e 'Zip archive' -e 'gzip compressed'
   then
