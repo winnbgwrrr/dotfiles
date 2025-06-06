@@ -1,9 +1,7 @@
 # .bashrc
 
 # Source global definitions
-if [ -f /etc/bashrc ]; then
-  . /etc/bashrc
-fi
+test -f /etc/bashrc && . /etc/bashrc
 
 shopt -s autocd
 
@@ -14,10 +12,5 @@ declare -A workspaces
 # Set up fzf key bindings and fuzzy completion
 eval "$(fzf --bash)"
 
-if [ -f ~/dotfiles/bash_functions ]; then
-  . ~/dotfiles/bash_functions
-fi
-
-if [ -f ~/dotfiles/bash_aliases ]; then
-  . ~/dotfiles/bash_aliases
-fi
+test -f ~/.bash_functions && . ~/.bash_functions
+test -f ~/.bash_aliases && . ~/.bash_aliases
