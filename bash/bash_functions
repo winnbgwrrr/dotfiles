@@ -4,7 +4,7 @@ _new_script() {
   local snm
   snm=${1:?}
   [ -f "$snm" ] && { _print_error '%s\n' "$snm already exists"; return 1; }
-  cp $HOME/.local/share/templates/boiler_plate.sh "$snm"
+  cp $HOME/.local/share/templates/sh.template "$snm"
   sed -i "s/\(^# Script:   \) \{${#snm}\}/\1$snm/" "$snm"
   sed -i "s/\(^# Usage:    \) \{${#snm}\}/\1$snm [-h]/" "$snm"
   sed -i "s/\(^# Date written: \)/\1$(date '+%m-%d-%Y')/" "$snm"
