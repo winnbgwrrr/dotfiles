@@ -14,7 +14,7 @@ alias vi='vim -b'
 
 # Functions
 alias notes='_notes'
-alias newsh='_new_script'
+alias newsh='new_script.sh'
 alias exit='_exit'
 alias vgrep='visual_grep.sh'
 alias fvi='_fzf_vim'
