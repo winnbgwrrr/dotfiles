@@ -3,6 +3,8 @@
 # Source global definitions
 test -f /etc/bashrc && . /etc/bashrc
 
+stty -ixon
+
 shopt -s autocd
 
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"

@@ -10,6 +10,6 @@ set keymap vi-insert
 
 "\e[A": history-search-backward
 "\e[B": history-search-forward
-"\C-x": 'tmux kill-session\n'
+"\C-q": 'tmux kill-server\n'
 "\C-h": '_home;_reset_prompt\n'
 "\C-e": '_explore_window;_reset_prompt\n'
