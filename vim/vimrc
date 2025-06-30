@@ -7,6 +7,7 @@ set expandtab
 set autoindent
 set smartindent
 set hlsearch
+set termguicolors
 
 syntax on
 
@@ -18,7 +19,7 @@ if has('autocmd')
    autocmd FileType xml setlocal indentexpr=
    autocmd BufWritePre * :%s/\(\s*\n\)\+\%$//ge
    autocmd BufWritePre * :%s/\(\s*\n\)\{3,}/\r\r/ge
-   autocmd BufWritePre * :%s/\s\+$//ge
+   autocmd BufWritePre *\(.md\)\@<! :%s/\s\+$//e
 endif
 
 nnoremap ,c :nohlsearch<CR>
@@ -29,5 +30,7 @@ nnoremap ,s :set ft=sh<CR>
 nnoremap ,d ciW"<C-r>""
 nnoremap ," va'l:s/\%V'\%V/"/g<CR>
 nnoremap ,' va"l:s/\%V"\%V/'/g<CR>
-nnoremap ,D yiwoecho "debug: <C-r>" $<C-r>""<Esc>
-nnoremap ,v F=hyiw
+nnoremap ,D 0f=bywoecho "debug: <C-r>" $<C-r>""<Esc>
+nnoremap ,v 0f=byw
+nnoremap ,q 0f=lc$"<C-r>""<Esc>
+nnoremap ,Q 0f=lc$'<C-r>"'<Esc>
