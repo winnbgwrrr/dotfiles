@@ -5,8 +5,6 @@ alias lat='ls -alt'
 alias rp='realpath'
 alias vi='vim'
 alias new='tmux new -As cachy'
-alias pv='[ -z "$TMUX" ] || tmux split-window -v'
-alias ph='[ -z "$TMUX" ] || tmux split-window -h'
 
 # Sudo
 alias pacman='sudo pacman'
@@ -18,16 +16,19 @@ alias scripts='_tmux_window scripts'
 alias configs='_tmux_window dotfiles'
 
 # Functions
-alias newsh='_new_script'
+alias notes='_notes'
 
 # Scripts
 alias pw='passwordmanager.sh'
-alias search='search.sh'
+alias newsh='new_script.sh'
+alias newws='setup_workspace.sh'
+alias sw='split_window.sh'
+alias vgrep='visual_grep.sh'
+alias explore='explore.sh'
 
 # Git
 alias pull='_git_pull'
 alias push='_git_push'
 
 # Remote
-alias mini='_remote_connect mini R-Mini-s'
-alias minip='_remote_connect mini R-Mini-s --split-window -h'
+alias xxx='ssh -q xxx'

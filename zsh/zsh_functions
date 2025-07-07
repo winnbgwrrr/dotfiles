@@ -1,29 +1,8 @@
 # .zsh_functions
 
-_new_script() {
-  local sh_name len
-  sh_name=${1:?}
-  len=${#sh_name}
-  cp ~/bin/.boiler_plate_sh "$sh_name"
-  sed -i "s/\(^# Script:   \) \{$len\}/\1$sh_name/" "$sh_name"
-  sed -i "s/\(^# Usage:    \) \{$len\}/\1$sh_name [-h]/" "$sh_name"
-  sed -i "s/\(^# Date written: \) \{10\}/\1$(date '+%m-%d-%Y')/" "$sh_name"
-  chmod 750 "$sh_name"
-}
-
-_remote_connect() {
-  local session_name destination ssh_cmd
-  session_name="${1:?}"
-  shift
-  destination="${1:?}"
-  shift
-  ssh_cmd="ssh -q $destination -t 'tmux new -As $session_name'"
-  if [ "$1" = '--split-window' ]; then
-    shift
-    tmux split-window "$@" "$ssh_cmd"
-  else
-    nocorrect eval ${ssh_cmd}
-  fi
+_notes() {
+  note_file="${1:-general}"
+  vim ~/git/notes/$note_file.md
 }
 
 _tmux_window() {
