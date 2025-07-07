@@ -69,120 +69,10 @@ _notes() {
   tput setaf '7'
 }
 
-_explore_window() {
-  tmux new-window -n search
-  tmux split-window -bh -p 30 -t search \
-    'source ~/.bashrc; _explore; tmux kill-window'
-  tmux split-window -l 1 -t search.1
-  tmux send-keys -t search.1 'unset PS1' C-m 'clear' C-m
-  tmux send-keys -t search.2 'unset PS1' C-m 'clear' C-m
-  tmux select-pane -dt search.2
-  tmux select-pane -t search.0
-}
-
-_explore() {
-  local usrin lastopt sel message
-  declare -A search_categories
-  declare -a optslist
-#  search_categories["Menu Opt"]='path'
-  optslist=('Select one of the following categories:')
-  for o in "${!search_categories[@]}"; do
-    if [ -d "${search_categories[$o]}" ] &&
-      [ -n "$(ls -A ${search_categories[$o]})" ]
-      then
-      optslist+=("$o")
-    else
-      unset search_categories["$o"]
-    fi
-  done
-  if [ ${#search_categories[@]} -eq 0 ]; then
-    _find_and_display_file "$PWD" && { _explore; return 0; } || return 1
-  fi
-  optslist+=('Current Working Directory')
-  optslist+=('Quit')
-  clear
-  _display_menu "${optslist[@]}"
-  lastopt=$((${#optslist[@]}-1))
-  read -p "Enter Choice [1-$lastopt] " usrin
-  case "$usrin" in
-    $lastopt|[Qq]*)
-      return 0
-      ;;
-    $(($lastopt-1)))
-      _find_and_display_file "$PWD" && { _explore; return 0; } || return 1
-      ;;
-    *)
-      if ! _int_test "$usrin" || [ -z "${optslist[$usrin]}" ]; then
-        _display_error "$usrin $NOT_RECOGNIZED_OPTION" || return 2
-      else
-        _find_and_display_file "${search_categories[${optslist[$usrin]}]}" ||
-          return 1
-      fi
-      ;;
-  esac
-  _explore
-}
-
-_find_and_display_file() {
-  local dir path cmd
-  dir="${1:?}"
-  cd $dir
-  path=$dir/$(find * -maxdepth 4 -not -path '*/.?*/*' | fzf) || return 1
-  tmux send-keys -t search.2 'clear' C-m
-  cd -
-  if [ -d "$path" ]; then
-    _find_and_display_file "$path"
-    return $?
-  fi
-  case "$path" in
-    *.log)
-      echo "less -S -p ^ERROR: $path"
-      ;;
-    *.sas|*.sh)
-      echo "vim -b $path"
-      ;;
-    *.sas7bdat)
-      echo "_display_sas_dataset $path | column -t -s ',' | less -S"
-      ;;
-    *.sas7bcat)
-      echo "_display_sas_catalog $path | column -t -s ',' | less -S"
-      ;;
-    *.json)
-      echo "jq '.' $path | less -S"
-      ;;
-    *.zip|*.gz)
-      echo "less -S $path"
-      ;;
-    *)
-      if file $(realpath $path) | grep -q 'text'; then
-        echo "less -S $path"
-      else
-        _display_error "$path is not a text file"
-        return $?
-      fi
-      ;;
-  esac | xargs -I {} tmux respawn-pane -kt search.1 \
-    "bash -c 'source ~/.bashrc; {}'"
-}
-
-_debug() {
-  pane_tty=$(tmux list-panes -t search -a -F '#I #{pane_index} #{pane_tty}' |
-    grep '^0 0 ' | sed 's/^0 0 //')
-  [ -z "$pane_tty" ] && return 1
-  printf '\n%s\n' "${1:?}" >$pane_tty
-}
-
-_display_error() {
-  pane_tty=$(tmux list-panes -t search -F '#{pane_index} #{pane_tty}' |
-    grep '^2 ' | sed 's/^2 //')
-  [ -z "$pane_tty" ] && return 1
-  printf '\n%s%s%s\n' "$(tput setaf 1)" "${1:?}" "$(tput setaf 7)" >$pane_tty
-}
-
 _fzf_vim() {
   local top_dir path
   top_dir=${1:-$HOME}
-  path=$(find $top_dir -type f -not -path '*/.git' | fzf)
+  path=$(find $top_dir -type f -not -path '*/.git*' | fzf)
   [ -z "$path" ] && return 0
   if file $(realpath $path) |
     grep -qe 'text' -e 'Zip archive' -e 'gzip compressed'
@@ -211,21 +101,6 @@ _home() {
   fi
 }
 
-_remote_connect() {
-  local session_name destination ssh_cmd
-  session_name="${1:?}"
-  shift
-  destination="${1:?}"
-  shift
-  ssh_cmd="ssh -q $destination -t 'tmux new -As $session_name'"
-  if [ "$1" = '--split-window' ]; then
-    shift
-    tmux split-window "$@" "$ssh_cmd"
-  else
-    eval "$ssh_cmd"
-  fi
-}
-
 _tmux_window() {
   local arg
   arg="${1:?}"
@@ -242,11 +117,9 @@ _exit() {
   [ -z "$TMUX" ] && exit
   if [ $(tmux list-panes | wc -l) -gt 1 ]; then
     tmux kill-pane
+  elif [ $(tmux display-message -p '#I') -gt 0 ]; then
+    tmux kill-window
   else
-    if [ $(tmux display-message -p '#I') -gt 0 ]; then
-      tmux kill-window
-    else
-      tmux detach
-    fi
+    tmux detach
   fi
 }
