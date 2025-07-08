@@ -12,14 +12,23 @@ alias vi='vim -b'
 
 # Workspaces
 
+# Remote
+
+# Scripts
+alias newsh='new_script.sh'
+alias newws='setup_workspace.sh'
+alias vgrep='visual_grep.sh'
+alias explore='explore.sh'
+alias sw='split_window.sh'
+
 # Functions
 alias notes='_notes'
-alias newsh='new_script.sh'
 alias exit='_exit'
-alias vgrep='visual_grep.sh'
-alias fvi='_fzf_vim'
+alias fvim='_fzf_vim'
+alias fsas='_fzf_sas'
 alias gpull='_git_pull'
 alias gpush='_git_push'
+alias gdn='_gen_dev_note'
 alias gbs='_git_branch_selector'
 
 # Git
