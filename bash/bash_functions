@@ -1,7 +1,9 @@
 # .bash_functions
 
 _ps1_branch() {
-  git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+  git rev-parse 2>/dev/null || return 0
+  echo " ($(git symbolic-ref --short -q HEAD ||
+    echo "($(git rev-parse --short HEAD)...)"))"
 }
 
 _notes() {
