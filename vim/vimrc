@@ -8,6 +8,7 @@ set autoindent
 set smartindent
 set hlsearch
 set termguicolors
+set mouse=a
 
 syntax on
 
@@ -27,10 +28,10 @@ nnoremap ,i mqggVG=`qzz
 nnoremap ,b :e ++ff=unix<CR>
 nnoremap ,m :%s/\r$//<CR>
 nnoremap ,s :set ft=sh<CR>
-nnoremap ,d ciW"<C-r>""
-nnoremap ," va'l:s/\%V'\%V/"/g<CR>
-nnoremap ,' va"l:s/\%V"\%V/'/g<CR>
+nnoremap ,d ciW"<C-r>""<Esc>
+nnoremap ," va':s/\%V'/"/g<CR>
+nnoremap ,' va":s/\%V"/'/g<CR>
 nnoremap ,D 0f=bywoecho "debug: <C-r>" $<C-r>""<Esc>
 nnoremap ,v 0f=byw
-nnoremap ,q 0f=lc$"<C-r>""<Esc>
-nnoremap ,Q 0f=lc$'<C-r>"'<Esc>
+nnoremap ,q A"<Esc>F=a"<Esc>
+nnoremap ,Q A'<Esc>F=a'<Esc>
