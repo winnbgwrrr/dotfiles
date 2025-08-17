@@ -1,0 +1,37 @@
+# .bash_aliases
+
+# Commands
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias lat='lsa -snew'
+alias lst='ls -snew'
+alias lstd='lst -D'
+alias rp='realpath'
+alias vi='nvim'
+
+# Workspaces
+alias dotfiles='_tmux_window dotfiles'
+alias scripts='_tmux_window scripts'
+
+# Remote
+
+# Scripts
+alias newsh='new_script.sh'
+alias newws='setup_workspace.sh'
+alias vgrep='visual_grep.sh'
+alias explore='explore.sh'
+alias sw='split_window.sh'
+
+# Functions
+alias notes='_notes'
+alias exit='_exit'
+alias fvim='_fzf_vim'
+alias gpull='_git_pull'
+alias gpush='_git_push'
+alias gdn='_gen_dev_note'
+alias gbs='_git_branch_selector'
+
+# Git
+alias gl='git log --pretty=oneline'
+alias gll='git log -1 --pretty=oneline'

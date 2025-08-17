@@ -1,0 +1,17 @@
+# .bash_profile
+
+test -f ~/.profile && . ~/.profile
+test -f ~/.bashrc && . ~/.bashrc
+
+PS1=$'\uf120'
+PS1="\n\[\e[38;5;111m\]$PWD\[\e[38;5;125m\]\$(_ps1_branch)\n\[\e[38;5;185m\]$PS1\[\e[0;0m\] "
+
+stty -ixon
+shopt -s autocd
+
+export PROMPT_COMMAND="history -a; history -n"
+export HISTIGNORE='clear*:_home*:exit:pwd'
+
+[ -z "$DISPLAY" ] && [ "$(tty)" = '/dev/tty1' ] && exec Hyprland
+
+fastfetch

@@ -1,0 +1,29 @@
+# .bashrc
+
+# Source global definitions
+test -f /etc/bashrc && . /etc/bashrc
+
+declare -A workspaces
+workspaces['omarchy']="$HOME/git/omarchy"
+workspaces['dotfiles']="$HOME/git/dotfiles"
+workspaces['scripts']="$HOME/git/shell-scripts"
+
+# Set up fzf key bindings and fuzzy completion
+eval "$(fzf --bash)"
+
+files=$(
+  cat <<EOF
+$HOME/.local/share/omarchy/default/bash/shell
+$HOME/.local/share/omarchy/default/bash/aliases
+$HOME/.local/share/omarchy/default/bash/functions
+$HOME/.local/share/omarchy/default/bash/prompt
+$HOME/.local/share/omarchy/default/bash/init
+$HOME/.local/share/omarchy/default/bash/envs
+$HOME/.bash_functions
+$HOME/.bash_aliases
+EOF
+)
+
+for f in $files; do
+  test -f $f && source $f
+done
