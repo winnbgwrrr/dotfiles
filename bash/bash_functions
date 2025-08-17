@@ -21,6 +21,7 @@ _notes() {
   optslist+=('open history in vim')
   optslist+=('run command in history')
   optslist+=('output command in history')
+  optslist+=('cleanup local branches')
   _display_menu "${optslist[@]}"
   lastopt=$((${#optslist[@]}-1))
   read -p "Enter Choice [1-$lastopt] " usrin
@@ -42,23 +43,27 @@ _notes() {
       printf '\t%s\n\n' 'openssl rsautl -decrypt -inkey ~/.ssl/id_rsa -in <encrypted.file>'
       ;;
     5)
-      printf '\n\t%s\n\n' "shuf -n <file> ><output>"
+      printf '\n\t%s\n\n' 'shuf -n <file> ><output>'
       ;;
     6)
-      printf '\n\t%s' "chage -l \$USER"
+      printf '\n\t%s' 'chage -l $USER'
       printf '\n\t%s\n\n' "SELECT username, expiry_date FROM dba_users WHERE username = '<username>';"
       ;;
     7)
       printf '\n\t%s\n\n' "tmux list-panes -F '#{pane_index} #{pane_active} #{pane_pid}'"
       ;;
     8)
-      printf '\n\t%s\n\n' "fc <num> [num]"
+      printf '\n\t%s\n\n' 'fc <num> [num]'
       ;;
     9)
-      printf '\n\t%s\n\n' "!<!|num>"
+      printf '\n\t%s\n\n' '!<!|num>'
       ;;
     10)
-      printf '\n\t%s\n\n' "history -p \!<num>"
+      printf '\n\t%s\n\n' 'history -p \!<num>'
+      ;;
+    11)
+      printf '\n\t%s' "git branch --merged=main | grep -v 'main' | xargs git branch -d"
+      printf '\n\t%s\n\n' 'git fetch --prune'
       ;;
     [Qq]*)
       echo
