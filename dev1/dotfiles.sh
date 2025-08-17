@@ -47,13 +47,16 @@ fi
 declare -A config_dirs
 config_dirs['hypr']="$HOME/.config"
 config_dirs['sshd_config.d']='/etc/ssh'
+git_dir="$HOME/git"
+dotfiles_dir="$git_dir/dotfiles"
+scripts_dir="$git_dir/shell_scripts"
 
-#rm -fr "$HOME/bin"
-#shared_url=''
-#temp_dir="$(mktemp -d)"
-#git clone $shared_url --branch sh --single-branch "$temp_dir"
-#mv "$temp_dir/bin" "$HOME/bin"
-#rm -fr "$temp_dir"
+rm -fr "$HOME/bin"
+shared_url='git@github.com:winnbgwrrr/shell-scripts.git'
+[ -d "$scripts_dir" ] || git clone "$shared_url" "$scripts_dir"
+cd "$scripts_dir" && git checkout main && git pull
+cp "$scripts_dir/patch_bin.sh" "$HOME/bin"
+$HOME/bin/patch_bin.sh
 
 dotfiles=$(
   cat <<EOF
@@ -67,31 +70,35 @@ tmux.conf
 EOF
 )
 
-cd ~/dotfiles/dev1
-#git restore .
-#git checkout main && git pull &&
+cd "$dotfiles_dir/dev1" && git restore . && git checkout main && git pull ||
+  exit 99
+
 for d in $doftiles; do
-  [ -f "$d" ] || find .. -not -path '../dev*' -name "$d" -exec cp {} . \;
-done &&
-  for l in *; do
-    [ -h "$HOME/.$l" ] && continue
-    [ "$l" = "$(basename $0)" ] && continue
-    [ -f "$HOME/.$l" ] && rm "$HOME/.$l"
-    #    ln -s "$HOME/dotfiles/$l" "$HOME/.$l"
-    echo "ln -s $HOME/dotfiles/$l $HOME/.$l"
-  done ||
-  {
-    echo 'dotfiles config not complete' >&2
-    exit 99
-  }
+  [ -f "$d" ] || find .. -not -path '../dev*' -name "$d" -exec cp {} . \; ||
+    {
+      echo "unable to find/copy $d" >&2
+      exit 98
+    }
+
+done
+
+for l in *; do
+  [ -h "$HOME/.$l" ] && continue
+  [ "$l" = "$(basename $0)" ] && continue
+  [ -f "$HOME/.$l" ] && rm "$HOME/.$l"
+  ln -s "$dotfiles_dir/dev1/$l" "$HOME/.$l" ||
+    {
+      echo 'dotfiles config not complete' >&2
+      exit 97
+    }
+done
 
 for c in "${!config_dirs[@]}"; do
-  echo "cp $c/* ${config_dirs[$c]}/$c"
-  #cp $c/* "${config_dirs[$c]/$c" ||
-  #{
-  #  echo 'copying config files not complete' >&2
-  #  exit 98
-  #}
+  cp "$c/*" "${config_dirs[$c]}/$c" ||
+    {
+      echo 'copying config files not complete' >&2
+      exit 96
+    }
 done
 
 exit 0
