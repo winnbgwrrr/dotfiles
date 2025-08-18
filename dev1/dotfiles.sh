@@ -80,7 +80,6 @@ for d in $doftiles; do
       echo "unable to find/copy $d" >&2
       exit 98
     }
-
 done
 
 for l in *; do
@@ -95,6 +94,7 @@ for l in *; do
     }
 done
 
+pwd
 for c in "${!config_dirs[@]}"; do
   cp "$c/*" "${config_dirs[$c]}/$c" ||
     {
@@ -104,4 +104,3 @@ for c in "${!config_dirs[@]}"; do
 done
 
 exit 0
-
