@@ -74,9 +74,7 @@ EOF
 cd "$dotfiles_dir/dev1" && git restore . && git checkout main && git pull ||
   exit 99
 
-for d in $doftiles; do
-  echo "$d"
-  [ -f "$d" ] && echo "Found $d" || echo "Missing $d"
+for d in $dotfiles; do
   [ -f "$d" ] || find .. -not -path '../dev*' -name "$d" -exec cp {} . \; ||
     {
       echo "unable to find/copy $d" >&2
@@ -96,9 +94,8 @@ for l in *; do
     }
 done
 
-pwd
 for c in "${!config_dirs[@]}"; do
-  cp $c/* ${config_dirs[$c]}/$c ||
+  $([ -w "${config_dirs[$c]}" ] || echo 'sudo') cp $c/* ${config_dirs[$c]}/$c ||
     {
       echo 'copying config files not complete' >&2
       exit 96
