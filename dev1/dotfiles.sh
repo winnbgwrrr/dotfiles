@@ -55,7 +55,8 @@ rm -fr "$HOME/bin"
 shared_url='git@github.com:winnbgwrrr/shell-scripts.git'
 [ -d "$scripts_dir" ] || git clone "$shared_url" "$scripts_dir"
 cd "$scripts_dir" && git checkout main && git pull
-cp "$scripts_dir/patch_bin.sh" "$HOME/bin"
+mkdir "$HOME/bin"
+cp "bash/patch_bin.sh" "$HOME/bin"
 $HOME/bin/patch_bin.sh
 
 dotfiles=$(
@@ -84,6 +85,7 @@ done
 
 for l in *; do
   [ -h "$HOME/.$l" ] && continue
+  [ -d "$l" ] && continue
   [ "$l" = "$(basename $0)" ] && continue
   [ -f "$HOME/.$l" ] && rm "$HOME/.$l"
   ln -s "$dotfiles_dir/dev1/$l" "$HOME/.$l" ||
@@ -102,3 +104,4 @@ for c in "${!config_dirs[@]}"; do
 done
 
 exit 0
+
