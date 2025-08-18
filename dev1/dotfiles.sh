@@ -51,16 +51,17 @@ git_dir="$HOME/git"
 dotfiles_dir="$git_dir/dotfiles"
 scripts_dir="$git_dir/shell_scripts"
 
-rm -fr "$HOME/bin"
-shared_url='git@github.com:winnbgwrrr/shell-scripts.git'
-[ -d "$scripts_dir" ] || git clone "$shared_url" "$scripts_dir"
-cd "$scripts_dir" && git checkout main && git pull
-mkdir "$HOME/bin"
-cp "bash/patch_bin.sh" "$HOME/bin"
-$HOME/bin/patch_bin.sh
+[ -d "$HOME/bin" ] ||
+  {
+    shared_url='git@github.com:winnbgwrrr/shell-scripts.git'
+    [ -d "$scripts_dir" ] || git clone "$shared_url" "$scripts_dir"
+    cd "$scripts_dir" && git checkout main && git pull
+    mkdir "$HOME/bin"
+    cp bash/* $HOME/bin
+    chmod 750 $HOME/bin/*.sh
+  }
 
-dotfiles=$(
-  cat <<EOF
+dotfiles=$(cat <<EOF
 bash_profile
 bashrc
 bash_aliases
