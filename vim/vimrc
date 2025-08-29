@@ -20,7 +20,6 @@ if has('autocmd')
    autocmd FileType xml setlocal indentexpr=
    autocmd BufWritePre * :%s/\(\s*\n\)\+\%$//ge
    autocmd BufWritePre * :%s/\(\s*\n\)\{3,}/\r\r/ge
-   autocmd BufWritePre * :%s/\s\+$//ge
    autocmd BufWritePre *\(.md\)\@<! :%s/\s\+$//e
 endif
 
