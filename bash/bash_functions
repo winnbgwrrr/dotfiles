@@ -77,12 +77,33 @@ _notes() {
 }
 
 _alias_lookup() {
-  cmd=$(sed "/^#/d;s/^alias \([[:alnum:]_.]\+\)=\(.*\)/\1 \2/" ~/.bash_aliases |
-    xargs printf '%-12s\t%s\n' | fzf --layout=reverse --height 40% |
+  cmd=$(
+    sed "/^#/d;s/^alias \(\S\+\)=\(.*\)/\1 \2/" ~/.bash_aliases |
+    xargs printf '%-12s\t%s\n' | fzf --header 'Select an Alias' \
+    --layout=reverse --height 40% |
     cut -d ' ' -f 1)
   [ -z "$cmd" ] && return 1
   read -p "> $cmd " args
   eval $cmd $args
+}
+
+_git_push() {
+  if [ -n "$1" ]; then
+    local_branch="$1"
+  else
+    local_branch="$(_git_branch)" || return 1
+    if echo "$local_branch" | grep -q '\(dvlp\|acct\|sit\|main\)'; then
+      read -p "Enter a name for the local branch: " local_branch
+      [ -z "$local_branch" ] && return 2
+    fi
+  fi
+  git ls-files --others --exclude-standard |
+    fzf --header 'Select Files to Add' --multi --layout=reverse \
+    --height 40% --exit-0 | xargs -r git add
+  if [ "$(_git_branch)" != "$local_branch" ]; then
+    git checkout -b $local_branch
+  fi
+  git commit -a && git push || return 3
 }
 
 _fzf_vim() {
@@ -127,6 +148,12 @@ _tmux_window() {
     tmux select-window -t "$arg" 2>/dev/null ||
       tmux new-window -n "$arg" -c "${workspaces[$arg]}"
   fi
+}
+
+_detach_tmux_client() {
+  tmux list-client | fzf --header 'Select a Client to Detach' \
+    --layout=reverse --height 40% | cut -d ' ' -f 2 |
+    xargs tmux detach-client -s
 }
 
 _exit() {
