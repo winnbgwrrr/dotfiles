@@ -24,6 +24,7 @@ alias sw='split_window.sh'
 # Functions
 alias notes='_notes'
 alias exit='_exit'
+alias al='_alias_lookup'
 alias fvim='_fzf_vim'
 alias gpull='_git_pull'
 alias gpush='_git_push'
