@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 ################################################################################
-# Script:   dotfiles.sh                                                        #
+# Script:   setup.sh                                                           #
 # Function:                                                                    #
-# Usage:    dotfiles.sh [-h]                                                   #
+# Usage:    setup.sh [-h]                                                      #
 #                                                                              #
 # Author: Robert Winslow                                                       #
 # Date written: 07-08-2025                                                     #
@@ -13,7 +13,7 @@
 USAGE_STR='[-h] [remote_aliases]'
 
 ####################
-# dotfiles.sh START
+# setup.sh START
 ####################
 help=$(
   cat <<END
@@ -46,19 +46,10 @@ fi
 
 declare -A config_dirs
 config_dirs['sshd_config.d']='/etc/ssh'
+config_dirs['konsole']="$HOME/.local/share"
 git_dir="$HOME/git"
 dotfiles_dir="$git_dir/dotfiles"
 scripts_dir="$git_dir/shell_scripts"
-
-[ -d "$HOME/bin" ] ||
-  {
-    shared_url='git@github.com:winnbgwrrr/shell-scripts.git'
-    [ -d "$scripts_dir" ] || git clone "$shared_url" "$scripts_dir"
-    cd "$scripts_dir" && git checkout main && git pull
-    mkdir "$HOME/bin"
-    cp bash/* $HOME/bin
-    chmod 750 $HOME/bin/*.sh
-  }
 
 dotfiles=$(cat <<EOF
 bash_profile
@@ -86,6 +77,7 @@ for l in *; do
   [ -h "$HOME/.$l" ] && continue
   [ -d "$l" ] && continue
   [ "$l" = "$(basename $0)" ] && continue
+  [ "$l" = "konsolerc" ] && cp "$l" "$HOME/.config"
   [ -f "$HOME/.$l" ] && rm "$HOME/.$l"
   ln -s "$dotfiles_dir/dev1/$l" "$HOME/.$l" ||
     {
@@ -101,5 +93,9 @@ for c in "${!config_dirs[@]}"; do
       exit 96
     }
 done
+
+echo 'Run the following commands to complete setup:'
+echo 'source ~/.bash_profile'
+echo 'bind -f ~/.inputrc'
 
 exit 0

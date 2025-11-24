@@ -16,9 +16,10 @@ alias vi='vim -b'
 alias work='_tmux_window work'
 alias bin='_tmux_window bin'
 alias scripts='_tmux_window scripts'
-alias configs='_tmux_window dotfiles'
+alias dotfiles='_tmux_window dotfiles'
 
-# Remote
+# Sudo
+alias pacman='sudo pacman'
 
 # Scripts
 alias newsh='new_script.sh'
