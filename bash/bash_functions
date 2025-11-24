@@ -80,8 +80,7 @@ _alias_lookup() {
   cmd=$(
     sed "/^#/d;s/^alias \(\S\+\)=\(.*\)/\1 \2/" ~/.bash_aliases |
     xargs printf '%-12s\t%s\n' | fzf --header 'Select an Alias' \
-    --layout=reverse --height 40% |
-    cut -d ' ' -f 1)
+    --layout=reverse --height 40% --accept-nth 1)
   [ -z "$cmd" ] && return 1
   read -p "> $cmd " args
   eval $cmd $args
