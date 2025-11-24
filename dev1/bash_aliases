@@ -1,18 +1,22 @@
 # .bash_aliases
 
-# Commands
+# General
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
-alias lat='lsa -snew'
-alias lst='ls -snew'
-alias lstd='lst -D'
+alias grep='grep --color=auto'
+alias ls='ls --color=auto'
+alias lat='ls -lat'
+alias lst='ls -lt'
+alias lstd='ls -ltd'
 alias rp='realpath'
-alias vi='nvim'
+alias vi='vim -b'
 
 # Workspaces
-alias dotfiles='_tmux_window dotfiles'
+alias work='_tmux_window work'
+alias bin='_tmux_window bin'
 alias scripts='_tmux_window scripts'
+alias configs='_tmux_window dotfiles'
 
 # Remote
 
@@ -26,11 +30,14 @@ alias sw='split_window.sh'
 # Functions
 alias notes='_notes'
 alias exit='_exit'
+alias al='_alias_lookup'
 alias fvim='_fzf_vim'
 alias gpull='_git_pull'
 alias gpush='_git_push'
+alias gclean='_git_clean'
 alias gdn='_gen_dev_note'
 alias gbs='_git_branch_selector'
+alias detach='_detach_tmux_client'
 
 # Git
 alias gl='git log --pretty=oneline'

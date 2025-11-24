@@ -45,7 +45,6 @@ if [ $# -ne 0 ]; then
 fi
 
 declare -A config_dirs
-config_dirs['hypr']="$HOME/.config"
 config_dirs['sshd_config.d']='/etc/ssh'
 git_dir="$HOME/git"
 dotfiles_dir="$git_dir/dotfiles"
