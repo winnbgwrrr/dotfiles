@@ -87,14 +87,14 @@ _alias_lookup() {
 }
 
 _git_push() {
-  if [ -n "$1" ]; then
-    local_branch="$1"
-  else
+  if [ -z "$1" ]; then
     local_branch="$(_git_branch)" || return 1
-    if echo "$local_branch" | grep -q '\(dvlp\|acct\|sit\|main\)'; then
+    if grep -q 'main' <<<"$local_branch"; then
       read -p "Enter a name for the local branch: " local_branch
       [ -z "$local_branch" ] && return 2
     fi
+  else
+    local_branch="$1"
   fi
   git ls-files --others --exclude-standard |
     fzf --header 'Select Files to Add' --multi --layout=reverse \
