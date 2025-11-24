@@ -1,5 +1,7 @@
 # .bash_functions
 
+source "$HOME/bin/common.functions"
+
 _ps1_branch() {
   git rev-parse 2>/dev/null || return 0
   echo " ($(git symbolic-ref --short -q HEAD ||
