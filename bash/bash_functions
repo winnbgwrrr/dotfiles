@@ -104,7 +104,8 @@ _git_push() {
   if [ "$(_git_branch)" != "$local_branch" ]; then
     git checkout -b $local_branch
   fi
-  git commit -a && git push || return 3
+  git commit -a
+  git push || return 3
 }
 
 _fzf_vim() {
