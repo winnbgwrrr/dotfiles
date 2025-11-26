@@ -85,7 +85,7 @@ cd "$dotfiles_dir/$device_name" && git restore . && git checkout main && git pul
   exit 99
 
 for d in $dotfiles; do
-  _create_symlink "$(_find $l)" "$HOME/.$l" || exit 98
+  _create_symlink "$(_find $d)" "$HOME/.$d" || exit 98
 done
 
 [ -f "$HOME/.config/konsolerc" ] &&
