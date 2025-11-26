@@ -2,7 +2,7 @@
 Font=IntoneMono NF,15,-1,5,300,0,0,0,0,0,0,0,0,0,0,1,Regular
 
 [General]
-Command=/bin/bash --login
+Command=/bin/bash --login -c "tmux new -As mini"
 Name=konsole
 Parent=FALLBACK/
 
