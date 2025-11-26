@@ -52,6 +52,7 @@ dotfiles_dir="$git_dir/dotfiles"
 scripts_dir="$git_dir/shell_scripts"
 
 dotfiles=$(cat <<EOF
+profile
 bash_profile
 bashrc
 bash_aliases
