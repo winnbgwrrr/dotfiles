@@ -12,6 +12,24 @@
 
 USAGE_STR='[-h] [remote_aliases]'
 
+_find() {
+  if [ -f "$1" ]; then
+    realpath "$1"
+    return 0
+  elif [ -f "../$1" ]; then
+    realpath "../$1"
+    return 0
+  fi
+  return 1
+}
+
+_create_symlink() {
+  [ -z "$1" ] || [ -z "$2" ] && return 1
+  [ -h "$2" ] || [ -d "$1" ] && return 0
+  [ -f "$2" ] && rm "$2"
+  ln -s "$1" "$2"
+}
+
 ####################
 # setup.sh START
 ####################
@@ -40,16 +58,16 @@ done
 
 shift $((OPTIND - 1))
 
-if [ $# -ne 0 ]; then
+if [ $# -ne 1 ]; then
   _invalid_arguments "$@"
 fi
 
-declare -A config_dirs
-config_dirs['sshd_config.d']='/etc/ssh'
-config_dirs['konsole']="$HOME/.local/share"
+device_name="${1:?}"
 git_dir="$HOME/git"
 dotfiles_dir="$git_dir/dotfiles"
-scripts_dir="$git_dir/shell_scripts"
+
+declare -A config_dirs
+config_dirs['sshd_config.d']='/etc/ssh'
 
 dotfiles=$(cat <<EOF
 profile
@@ -63,29 +81,20 @@ tmux.conf
 EOF
 )
 
-cd "$dotfiles_dir/dev1" && git restore . && git checkout main && git pull ||
+cd "$dotfiles_dir/$device_name" && git restore . && git checkout main && git pull ||
   exit 99
 
 for d in $dotfiles; do
-  [ -f "$d" ] || find .. -not -path '../dev*' -name "$d" -exec cp {} . \; ||
-    {
-      echo "unable to find/copy $d" >&2
-      exit 98
-    }
+  _create_symlink "$(_find $l)" "$HOME/.$l" || exit 98
 done
 
-for l in *; do
-  [ -h "$HOME/.$l" ] && continue
-  [ -d "$l" ] && continue
-  [ "$l" = "$(basename $0)" ] && continue
-  [ "$l" = "konsolerc" ] && cp "$l" "$HOME/.config"
-  [ -f "$HOME/.$l" ] && rm "$HOME/.$l"
-  ln -s "$dotfiles_dir/dev1/$l" "$HOME/.$l" ||
-    {
-      echo 'dotfiles config not complete' >&2
-      exit 97
-    }
-done
+[ -f "$HOME/.config/konsolerc" ] &&
+  {
+    file='konsole/konsolerc'
+    _create_symlinks "$file" "HOME/.config/$file" || exit 97
+    file="konsole/default.profile"
+    _create_symlinks "$(_find $file)" "$HOME/.local/share/$file" || exit 97
+  }
 
 for c in "${!config_dirs[@]}"; do
   $([ -w "${config_dirs[$c]}" ] || echo 'sudo') cp $c/* ${config_dirs[$c]}/$c ||
