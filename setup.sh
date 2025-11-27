@@ -16,7 +16,7 @@ _find() {
   if [ -f "$1" ]; then
     realpath "$1"
     return 0
-  elif [ -f "../$1" ]; then
+  elif [ -f "../default/$1" ]; then
     realpath "../$1"
     return 0
   fi
@@ -63,8 +63,6 @@ if [ $# -ne 1 ]; then
 fi
 
 device_name="${1:?}"
-git_dir="$HOME/git"
-dotfiles_dir="$git_dir/dotfiles"
 
 declare -A config_dirs
 config_dirs['sshd_config.d']='/etc/ssh'
@@ -81,25 +79,35 @@ tmux.conf
 EOF
 )
 
-cd "$dotfiles_dir/$device_name" && git restore . && git checkout main && git pull ||
-  exit 99
+cd "$HOME/git/dotfiles/$device_name" && git checkout main && git pull || exit 99
 
 for d in $dotfiles; do
-  _create_symlink "$(_find $d)" "$HOME/.$d" || exit 98
+  _create_symlink "$(_find $d)" "$HOME/.$d" ||
+    {
+      echo "Failed to create symlink for $d" >&2
+      exit 98
+    }
 done
 
-[ -f "$HOME/.config/konsolerc" ] &&
-  {
-    file='konsole/konsolerc'
-    _create_symlinks "$file" "HOME/.config/$file" || exit 97
-    file="konsole/default.profile"
-    _create_symlinks "$(_find $file)" "$HOME/.local/share/$file" || exit 97
-  }
+if [ -f "$HOME/.config/konsolerc" ]; then
+  file='konsolerc'
+  _create_symlinks "$file" "HOME/.config/$file" ||
+    {
+      echo "Failed to create symlink for $file" >&2
+      exit 97
+    }
+  file="default.profile"
+  _create_symlinks "$(_find $file)" "$HOME/.local/share/konsole/$file" ||
+    {
+      echo "Failed to create symlink for $file" >&2
+      exit 97
+    }
+fi
 
 for c in "${!config_dirs[@]}"; do
   $([ -w "${config_dirs[$c]}" ] || echo 'sudo') cp $c/* ${config_dirs[$c]}/$c ||
     {
-      echo 'copying config files not complete' >&2
+      echo "Failed to copy ${config_dirs[$c]} files" >&2
       exit 96
     }
 done
