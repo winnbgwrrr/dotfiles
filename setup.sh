@@ -17,7 +17,7 @@ _find() {
     realpath "$1"
     return 0
   elif [ -f "../default/$1" ]; then
-    realpath "../$1"
+    realpath "../default/$1"
     return 0
   fi
   return 1
