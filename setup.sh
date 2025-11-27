@@ -91,13 +91,13 @@ done
 
 if [ -f "$HOME/.config/konsolerc" ]; then
   file='konsolerc'
-  _create_symlinks "$file" "HOME/.config/$file" ||
+  _create_symlink "$file" "HOME/.config/$file" ||
     {
       echo "Failed to create symlink for $file" >&2
       exit 97
     }
   file="default.profile"
-  _create_symlinks "$(_find $file)" "$HOME/.local/share/konsole/$file" ||
+  _create_symlink "$(_find $file)" "$HOME/.local/share/konsole/$file" ||
     {
       echo "Failed to create symlink for $file" >&2
       exit 97
