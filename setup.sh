@@ -67,27 +67,15 @@ device_name="${1:?}"
 declare -A config_dirs
 config_dirs['sshd_config.d']='/etc/ssh'
 
-dotfiles=$(cat <<EOF
-profile
-bash_profile
-bashrc
-bash_aliases
-bash_functions
-inputrc
-vimrc
-tmux.conf
-EOF
-)
-
 cd "$HOME/git/dotfiles/$device_name" && git checkout main && git pull || exit 99
 
-for d in $dotfiles; do
-  _create_symlink "$(_find $d)" "$HOME/.$d" ||
+while read file; do
+  _create_symlink "$(_find $file)" "$HOME/.$file" ||
     {
-      echo "Failed to create symlink for $d" >&2
+      echo "Failed to create symlink for $file" >&2
       exit 98
     }
-done
+done <file.list
 
 if [ -f "$HOME/.config/konsolerc" ]; then
   file='konsolerc'

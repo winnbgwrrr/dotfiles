@@ -1,0 +1,54 @@
+# .bash_functions
+
+source "$HOME/bin/common.functions"
+
+_ps1_branch() {
+  git rev-parse 2>/dev/null || return 0
+  echo " ($(git symbolic-ref --short -q HEAD ||
+    echo "($(git rev-parse --short HEAD)...)"))"
+}
+
+_alias_lookup() {
+  cmd=$(
+    sed "/^#/d;s/^alias \(\S\+\)=\(.*\)/\1 \2/" ~/.bash_aliases |
+    xargs printf '%-12s\t%s\n' | fzf --header 'Select an Alias' \
+    --layout=reverse --height 40% --accept-nth 1)
+  [ -z "$cmd" ] && return 1
+  read -p "> $cmd " args
+  eval $cmd $args
+}
+
+_git_push() {
+  if [ -z "$1" ]; then
+    local_branch="$(_git_branch)" || return 1
+    if grep -q 'main' <<<"$local_branch"; then
+      read -p "Enter a name for the local branch: " local_branch
+      [ -z "$local_branch" ] && return 2
+    fi
+  else
+    local_branch="$1"
+  fi
+  git ls-files --others --exclude-standard |
+    fzf --header 'Select Files to Add' --multi --layout=reverse \
+    --height 40% --exit-0 | xargs -r git add
+  if [ "$(_git_branch)" != "$local_branch" ]; then
+    git checkout -b $local_branch
+  fi
+  git commit -a
+  git push || return 3
+}
+
+_fzf_vim() {
+  local top_dir path
+  top_dir=${1:-$HOME}
+  path=$(find $top_dir -type f -not -path '*/.git*' | fzf)
+  [ -z "$path" ] && return 0
+  if file $(realpath $path) |
+    grep -qe 'text' -e 'Zip archive' -e 'gzip compressed'
+  then
+    vim -b $path
+  else
+    _print_error "$path is not a text file"
+    return 1
+  fi
+}

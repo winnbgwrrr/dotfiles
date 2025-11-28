@@ -1,0 +1,18 @@
+# .bashrc
+
+[[ $- != *i* ]] && return
+
+# Source global definitions
+test -f /etc/bashrc && . /etc/bashrc
+
+declare -A workspaces
+workspaces['work']="$HOME/work"
+workspaces['bin']="$HOME/bin"
+workspaces['scripts']="$HOME/git/shell_scripts"
+workspaces['dotfiles']="$HOME/git/dotfiles"
+
+# Set up fzf key bindings and fuzzy completion
+eval "$(fzf --bash)"
+
+test -f ~/.bash_functions && . ~/.bash_functions
+test -f ~/.bash_aliases && . ~/.bash_aliases
