@@ -69,13 +69,13 @@ config_dirs['sshd_config.d']='/etc/ssh'
 
 cd "$HOME/git/dotfiles/$device_name" && git checkout main && git pull || exit 99
 
-while read file; do
-  _create_symlink "$(_find $file)" "$HOME/.$file" ||
+while read dotfile; do
+  _create_symlink "$(_find $dotfile)" "$HOME/.$dotfile" ||
     {
-      echo "Failed to create symlink for $file" >&2
+      echo "Failed to create symlink for $dotfile" >&2
       exit 98
     }
-done <file.list
+done <dot.files
 
 if [ -f "$HOME/.config/konsolerc" ]; then
   file='konsolerc'
