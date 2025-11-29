@@ -22,6 +22,9 @@ alias newws='setup_workspace.sh'
 alias vgrep='visual_grep.sh'
 alias explore='explore.sh'
 
+# Remotes
+alias mini='ssh R-Mini-s'
+
 # Functions
 alias notes='_notes'
 alias al='_alias_lookup'
