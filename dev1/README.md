@@ -32,6 +32,9 @@ sudo firewall-cmd --reload
 ```
 
 Comment out lines in /etc/ssh/sshd_config.d/20-force_publickey_auth.conf
+``` sshd_config.sh
+TODO create script to toggle password/publickey auth
+```
 
 ``` start ssh service
 sudo systemctl enable sshd.service
@@ -54,18 +57,4 @@ Connect from dev0 get public key and add it to github
 ``` set ssh url
 cd ~/git/dotfiles
 git remote set-url origin git@github.com:winnbgwrrr/dotfiles.git
-```
-
-## Setup bin
-```
-[ -d "$HOME/bin" ] ||
-  {
-    scripts_dir="$HOME/git/shell_scripts"
-    shared_url='git@github.com:winnbgwrrr/shell-scripts.git'
-    [ -d "$scripts_dir" ] || git clone "$shared_url" "$scripts_dir"
-    cd "$scripts_dir" && git checkout main && git pull
-    mkdir "$HOME/bin"
-    cp bash/* $HOME/bin
-    chmod 750 $HOME/bin/*.sh
-  }
 ```
