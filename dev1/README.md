@@ -60,6 +60,7 @@ git remote set-url origin git@github.com:winnbgwrrr/dotfiles.git
 ```
 [ -d "$HOME/bin" ] ||
   {
+    scripts_dir="$HOME/git/shell_scripts"
     shared_url='git@github.com:winnbgwrrr/shell-scripts.git'
     [ -d "$scripts_dir" ] || git clone "$shared_url" "$scripts_dir"
     cd "$scripts_dir" && git checkout main && git pull
