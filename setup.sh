@@ -25,8 +25,15 @@ _find() {
 
 _create_symlink() {
   [ -z "$1" ] || [ -z "$2" ] && return 1
-  [ -h "$2" ] || [ -d "$1" ] && return 0
-  [ -f "$2" ] && rm "$2"
+  [ -d "$1" ] && return 0
+  if [ -h "$2" ] && [ "$1" -ef "$2" ]; then
+    echo "$1 and $2 are alread symlinked"
+    continue
+  elif [ -h "$2" ] && [ "$1" -ef "$2" ]; then
+    rm "$2"
+  elif [ -f "$2" ]; then
+    rm "$2"
+  fi
   ln -s "$1" "$2"
 }
 
