@@ -170,8 +170,7 @@ _exit() {
 }
 
 _sshd_auth() {
-#  conf_file='/etc/ssh/sshd_config.d/20-force_publickey_auth.conf'
-  conf_file='sshd_config.d/20-force_publickey_auth.conf'
+  conf_file='/etc/ssh/sshd_config.d/20-force_publickey_auth.conf'
   if [ "$1" = '--password' ]; then
     script='s/no/yes/;s/publickey/password/'
   elif [ "$1" = '--publickey' ]; then
@@ -179,13 +178,12 @@ _sshd_auth() {
   else
     return 1
   fi
-#  sudo sed -i "$script" $conf_file
-  sed "$script" $conf_file
-#  sudo systemctl restart sshd.service
+  sudo sed -i "$script" $conf_file
+  sudo systemctl restart sshd.service
 }
 
 _enable_sshd_password_auth() {
-  trap 'sshd_auth --publickey' INT TERM EXIT
-  sshd_auth --password
+  trap '_sshd_auth --publickey' INT TERM EXIT
+  _sshd_auth --password
   sleep 120
 }
