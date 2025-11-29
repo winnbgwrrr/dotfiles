@@ -111,8 +111,9 @@ done
     [ -d "$script_dir" ] || git clone "$script_url" "$script_dir"
     cd "$script_dir" && git checkout main && git pull
     mkdir "$HOME/bin"
-    cp patch_bin.sh "$HOME/bin"
-    chmod 750 $HOME/bin/patch_bin.sh
+    cp *.sh "$HOME/bin"
+    chmod 750 $HOME/bin/*.sh
+    $HOME/bin/patch_bin.sh
   }
 
 echo 'Run the following commands to complete setup:'
