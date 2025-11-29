@@ -12,4 +12,3 @@ export HISTIGNORE='clear*:_home*:exit:pwd'
 PS1="\n\[\e[38;5;147m\]\u@\h \[\e[38;5;114m\]\$PWD\[\e[38;5;221m\]\$(_ps1_branch)\n\[\e[38;5;221m\]$\[\e[0;0m\] "
 
 fastfetch
-ip addr show | sed -n '/^[0-9]: en/,/\s\+inet /s/\s\+inet \(.*\)\/.*/\1/p'
