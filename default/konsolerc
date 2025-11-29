@@ -8,4 +8,4 @@ ConfigVersion=1
 RemoveWindowTitleBarAndFrame=true
 
 [UiSettings]
-ColorScheme=
+ColorScheme=Vapor

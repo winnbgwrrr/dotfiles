@@ -90,9 +90,13 @@ if [ -f "$HOME/.config/konsolerc" ]; then
       echo "Failed to create symlink for $file" >&2
       exit 97
     }
+  file='Vapor.colorscheme'
+  [ -f "/usr/share/konsole/$file" ] ||
+    cp "../default/$file" "$HOME/.local/share/konsole"
 fi
 
 for c in "${!config_dirs[@]}"; do
+  [ -d "$c" ] || continue
   $([ -w "${config_dirs[$c]}" ] || echo 'sudo') cp $c/* ${config_dirs[$c]}/$c ||
     {
       echo "Failed to copy ${config_dirs[$c]} files" >&2
