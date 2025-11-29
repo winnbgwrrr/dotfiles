@@ -28,7 +28,7 @@ _create_symlink() {
   [ -d "$1" ] && return 0
   if [ -h "$2" ] && [ "$1" -ef "$2" ]; then
     echo "$1 and $2 are alread symlinked"
-    continue
+    return 0
   elif [ -h "$2" ] && [ "$1" -ef "$2" ]; then
     rm "$2"
   elif [ -f "$2" ]; then
