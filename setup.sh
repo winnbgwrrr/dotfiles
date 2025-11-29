@@ -110,13 +110,13 @@ done
 
 [ -d "$HOME/bin" ] ||
   {
+    mkdir "$HOME/bin"
+    cp *.sh "$HOME/bin"
+    chmod 750 $HOME/bin/*.sh
     script_dir="$HOME/git/shell_scripts"
     script_url='git@github.com:winnbgwrrr/shell-scripts.git'
     [ -d "$script_dir" ] || git clone "$script_url" "$script_dir"
     cd "$script_dir" && git checkout main && git pull
-    mkdir "$HOME/bin"
-    cp *.sh "$HOME/bin"
-    chmod 750 $HOME/bin/*.sh
     $HOME/bin/patch_bin.sh
   }
 
