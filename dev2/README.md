@@ -1,4 +1,4 @@
-# Notes for dev1
+# Notes for dev2
 
 ## Fresh Install
 ``` git directory
@@ -19,24 +19,16 @@ fc-cache -f
 rm IntelOneMono.tar.xz
 ```
 
-## Configure Environment
-``` execute setup.sh
-cd ~/git
-git clone https://github.com/winnbgwrrr/dotfiles.git dotfiles
-cd dotfiles/dev2
-./setup.sh
-```
-
 ## SSH Keys
 ```
 ssh-keygen -t ed25519
 ```
 
-Connect to dev1 and copy public key 
-Connect to dev1 from dev0 and copy public key to git hub
-Delete public key from dev1
+ - copy public key to dev0
+ - copy public key to github
 
-``` set ssh url
-cd ~/git/dotfiles
-git remote set-url origin git@github.com:winnbgwrrr/dotfiles.git
+## Configure Environment
+``` execute setup.sh
+git clone git@github.com:winnbgwrrr/dotfiles.git ~/git/dotfiles
+~/git/dotfiles/setup.sh dev2
 ```

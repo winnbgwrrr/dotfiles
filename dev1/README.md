@@ -7,22 +7,17 @@ sudo pacman -S vim tmux fastfetch fzf wl-clipboard ttf-intone-nerd
 
 ## Configure Environment
 ``` execute setup.sh
-cd
-mkdir git
-cd git
-git clone https://github.com/winnbgwrrr/dotfiles.git dotfiles
-cd dotfiles/dev1
-./setup.sh
+mkdir -p ~/git
+git clone https://github.com/winnbgwrrr/dotfiles.git ~/git/dotfiles
+~/git/dotfiles/setup.sh dev1
+```
+
+## Generate SSH Key
+```
+ssh-keygen -t ed25519
 ```
 
 ## SSH Server Setup
-
-### Config Files
-``` sshd_config.d
-https://github.com/winnbgwrrr/dotfiles/tree/main/dev1/sshd_config.d
-```
-
--------------------------------------------------------------------------------
 
 ### Open Port in Firewall
 ``` open port
@@ -31,28 +26,18 @@ xargs -I {} sudo firewall-cmd --zone=public --permanent --add-port={}/tcp &&
 sudo firewall-cmd --reload
 ```
 
-Comment out lines in /etc/ssh/sshd_config.d/20-force_publickey_auth.conf
-``` sshd_config.sh
-TODO create script to toggle password/publickey auth
-```
-
 ``` start ssh service
 sudo systemctl enable sshd.service
 sudo systemctl start ssh.service
 ```
 
-Connect from remote machines and copy public keys into dev1's authorized keys file
-Uncomment lines in /etc/ssh/sshd_config.d/20-force_publickey_auth.conf
-```
-sudo systemctl restart sshd.service
+``` espa
+espa # temporarily allows password authentication
 ```
 
-## SSH Keys
-```
-ssh-keygen -t ed25519
-```
-
-Connect from dev0 get public key and add it to github
+From dev0:
+ - copy public key to dev1's authorized keys
+ - copy dev1's public key to github
 
 ``` set ssh url
 cd ~/git/dotfiles
