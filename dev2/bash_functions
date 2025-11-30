@@ -52,3 +52,10 @@ _fzf_vim() {
     return 1
   fi
 }
+
+_update_ssh_ip() {
+  host="${1:?}"
+  read -e -p 'IP: ' -i '192.168.68.' ip
+  sed -i "/^Host $host/,/^\s\+HostName /s/^\(\s\+HostName \).*/\1$ip/" \
+    ~/.ssh/config
+ }

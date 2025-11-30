@@ -11,5 +11,3 @@ export PROMPT_COMMAND="history -a; history -n"
 export HISTIGNORE='clear*:_home*:exit:pwd'
 
 PS1="\n\[\e[38;5;147m\]\u@\h \[\e[38;5;114m\]\$PWD\[\e[38;5;221m\]\$(_ps1_branch)\n\[\e[38;5;221m\]$\[\e[0;0m\] "
-
-fastfetch

@@ -11,10 +11,10 @@ alias rp='realpath'
 alias vi='vim -b'
 
 # Workspaces
-alias work='cd ~/work'
-alias bin='cd ~/bin'
-alias scripts='cd ~/git/shell_scripts'
-alias dotfiles='cd ~/git/dotfiles'
+alias work='_tmux_window work'
+alias bin='_tmux_window bin'
+alias scripts='_tmux_window scripts'
+alias dotfiles='_tmux_window dotfiles'
 
 # Scripts
 alias newsh='new_script.sh'
@@ -26,7 +26,6 @@ alias explore='explore.sh'
 alias mini='ssh R-Mini-s'
 
 # Functions
-alias notes='_notes'
 alias al='_alias_lookup'
 alias fvim='_fzf_vim'
 alias gpull='_git_pull'
@@ -34,6 +33,7 @@ alias gpush='_git_push'
 alias gclean='_git_clean'
 alias gdn='_gen_dev_note'
 alias gbs='_git_branch_selector'
+alias minip='_update_ssh_ip R-Mini-s'
 
 # Git
 alias gl='git log --pretty=oneline'
