@@ -28,7 +28,7 @@ _create_symlink() {
   [ -d "$1" ] && return 0
   if [ -h "$2" ] && [ "$1" -ef "$2" ]; then
     return 0
-  elif [ -f "$2" ]; then
+  elif [ -f "$2" ] || [ ! -e "$2" ]; then
     rm "$2"
   fi
   ln -s "$1" "$2"
