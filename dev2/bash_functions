@@ -53,6 +53,52 @@ _fzf_vim() {
   fi
 }
 
+_reset_prompt() {
+  local n
+  n=${PS1@P}
+  n=${n//[^$'\n']}
+  n=${#n}
+  tput cuu $((n + 1))
+  tput ed
+}
+
+_home() {
+  if [ -z "$TMUX" ]; then
+    cd ~
+  else
+    cd ${workspaces[$(tmux display-message -p '#W')]}
+  fi
+}
+
+_tmux_window() {
+  local arg
+  arg="${1:?}"
+  [ -z "${workspaces[$arg]}" ] && return 1
+  if [ -z "$TMUX" ]; then
+    cd "${workspaces[$arg]}"
+  else
+    tmux select-window -t "$arg" 2>/dev/null ||
+      tmux new-window -n "$arg" -c "${workspaces[$arg]}"
+  fi
+}
+
+_detach_tmux_client() {
+  tmux list-client | fzf --header 'Select a Client to Detach' \
+    --layout=reverse --height 40% | cut -d ' ' -f 2 |
+    xargs tmux detach-client -s
+}
+
+_exit() {
+  [ -z "$TMUX" ] && exit
+  if [ $(tmux list-panes | wc -l) -gt 1 ]; then
+    tmux kill-pane
+  elif [ $(tmux display-message -p '#I') -gt 0 ]; then
+    tmux kill-window
+  else
+    tmux detach
+  fi
+}
+
 _update_ssh_ip() {
   host="${1:?}"
   read -e -p 'IP: ' -i '192.168.68.' ip
