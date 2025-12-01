@@ -1,3 +1,5 @@
+MenuBar=Disabled
+
 [Desktop Entry]
 DefaultProfile=default.profile
 
@@ -6,9 +8,6 @@ ConfigVersion=1
 
 [KonsoleWindow]
 RemoveWindowTitleBarAndFrame=true
-
-[MainWindow]
-ToolBarsMovable=Disabled
 
 [UiSettings]
 ColorScheme=Vapor

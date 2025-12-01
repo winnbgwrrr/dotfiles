@@ -10,4 +10,11 @@ shopt -s autocd
 export PROMPT_COMMAND="history -a; history -n"
 export HISTIGNORE='clear*:_home*:exit:pwd'
 
-PS1="\n\[\e[38;5;33m\]\u@\h \[\e[38;5;48m\]\$PWD\[\e[38;5;51m\]\$(_ps1_branch)\n\[\e[38;5;51m\]$\[\e[0;0m\] "
+declare -a ps1c
+ps1c[0]='\e[0;0m'
+ps1c[1]='\e[38;5;33m'
+ps1c[2]='\e[38;5;48m'
+ps1c[3]='\e[38;5;177m'
+PS1="\n\[${ps1c[1]}\]\u@\h \[${ps1c[2]}\]\$PWD\[${ps1c[3]}\]\$(_ps1_branch)\n"
+PS1="$PS1\[${ps1c[3]}\]\$\[${ps1c[0]}\] "
+unset ps1c
