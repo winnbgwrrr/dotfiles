@@ -21,11 +21,13 @@ alias newsh='new_script.sh'
 alias newws='setup_workspace.sh'
 alias vgrep='visual_grep.sh'
 alias explore='explore.sh'
+alias sw='split_window.sh'
 
 # Remotes
 alias mini='ssh R-Mini-s'
 
 # Functions
+alias exit='_exit'
 alias al='_alias_lookup'
 alias fvim='_fzf_vim'
 alias gpull='_git_pull'
@@ -33,6 +35,7 @@ alias gpush='_git_push'
 alias gclean='_git_clean'
 alias gdn='_gen_dev_note'
 alias gbs='_git_branch_selector'
+alias detach='_detach_tmux_client'
 alias minip='_update_ssh_ip R-Mini-s'
 
 # Git
