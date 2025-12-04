@@ -7,8 +7,11 @@ set expandtab
 set autoindent
 set smartindent
 set hlsearch
+set nocompatible
 set termguicolors
 set mouse=a
+
+filetype plugin on
 
 syntax on
 
