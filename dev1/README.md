@@ -5,11 +5,22 @@
 sudo pacman -S vim tmux fastfetch fzf wl-clipboard ttf-intone-nerd
 ```
 
+``` vim-plug
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+```
+
 ## Configure Environment
 ``` execute setup.sh
 mkdir -p ~/git
 git clone https://github.com/winnbgwrrr/dotfiles.git ~/git/dotfiles
 ~/git/dotfiles/setup.sh dev1
+```
+
+### Install vimwiki
+Open vim
+``` install vim plug-ins
+:PlugInstall
 ```
 
 ## Generate SSH Key

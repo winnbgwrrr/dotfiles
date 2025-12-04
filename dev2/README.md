@@ -19,6 +19,11 @@ fc-cache -f
 rm IntelOneMono.tar.xz
 ```
 
+``` vim-plug
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+```
+
 ## SSH Keys
 ```
 ssh-keygen -t ed25519
@@ -31,4 +36,10 @@ ssh-keygen -t ed25519
 ``` execute setup.sh
 git clone git@github.com:winnbgwrrr/dotfiles.git ~/git/dotfiles
 ~/git/dotfiles/setup.sh dev2
+```
+
+### Install vimwiki
+Open vim
+``` install vim plug-ins
+:PlugInstall
 ```
