@@ -82,8 +82,8 @@ _tmux_window() {
 
 _detach_tmux_client() {
   tmux list-client | fzf --header 'Select a Client to Detach' \
-    --layout=reverse --height 40% | cut -d ' ' -f 2 |
-    xargs tmux detach-client -s
+    --layout=reverse --height 40% --accept-nth 2 --exit-0 |
+    xargs -r tmux detach-client -s
 }
 
 _exit() {
