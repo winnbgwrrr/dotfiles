@@ -143,12 +143,11 @@ _tmux_window() {
   local arg
   arg="${1:?}"
   [ -z "${workspaces[$arg]}" ] && return 1
-  if [ -z "$TMUX" ]; then
+  if [ -z "$TMUX" ] || [ "$arg" = "$(tmux display-message -p '#W')" ]; then
     cd "${workspaces[$arg]}"
-  elif tmux select-window -t "$arg" 2>/dev/null; then
-    [ "$arg" = "$(tmux display-message -p '#W')" ] && cd "${workspaces[$arg]}"
   else
-    tmux new-window -n "$arg" -c "${workspaces[$arg]}"
+    tmux select-window -t "$arg" 2>/dev/null ||
+      tmux new-window -n "$arg" -c "${workspaces[$arg]}"
   fi
 }
 
