@@ -146,8 +146,7 @@ _tmux_window() {
   if [ -z "$TMUX" ] || [ "$arg" = "$(tmux display-message -p '#W')" ]; then
     cd "${workspaces[$arg]}"
   else
-    tmux select-window -t "$arg" 2>/dev/null ||
-      tmux new-window -n "$arg" -c "${workspaces[$arg]}"
+    tmux new-window -S -n "$arg" -c "${workspaces[$arg]}"
   fi
 }
 
