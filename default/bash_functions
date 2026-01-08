@@ -135,7 +135,7 @@ _home() {
   if [ -z "$TMUX" ]; then
     cd ~
   else
-    cd "${workspaces[$(tmux display-message -p '#W')]}"
+    cd ${workspaces[$(tmux display-message -p '#W')]}
   fi
 }
 
