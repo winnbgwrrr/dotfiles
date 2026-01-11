@@ -89,11 +89,11 @@ _alias_lookup() {
 }
 
 _git_push() {
-  local_branch="${1:-$(_git_branch)}"
-  if [ "$local_branch" = 'main' ]; then
-    read -p "Enter a name for the local branch: " local_branch
-  fi
-  if [ "$local_branch" != '--force' ]; then
+  if [ "$1" != '--force' ]; then
+    local_branch="${1:-$(_git_branch)}"
+    if [ "$local_branch" = 'main' ]; then
+      read -p "Enter a name for the local branch: " local_branch
+    fi
     git checkout -B $local_branch || return 1
   fi
   git ls-files --others --exclude-standard |
