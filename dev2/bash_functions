@@ -34,9 +34,9 @@ _git_push() {
 }
 
 _fzf_vim() {
-  local top_dir path
-  top_dir=${1:-$HOME}
-  path=$(find $top_dir -type f -not -path '*/.git*' | fzf) || return 0
+  local dir path
+  dir="${1:-$HOME}"
+  path=$(find $dir -type f -not -path '*/.git*' | fzf) || return 0
   if file $(realpath $path) |
     grep -qe 'text' -e 'Zip archive' -e 'gzip compressed'
   then
