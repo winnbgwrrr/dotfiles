@@ -43,3 +43,4 @@ nnoremap ,q A"<Esc>F=a"<Esc>
 nnoremap ,Q A'<Esc>F=a'<Esc>
 nnoremap ,l viwgu
 nnoremap ,u viwgU
+nnoremap ,- I - <Esc>
