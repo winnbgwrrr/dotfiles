@@ -106,11 +106,11 @@ _git_push() {
 _fzf_vim() {
   local dir path
   dir="${1:-$HOME}"
-  path=$(find $dir -type f -not -path '*/.git*' | fzf) || return 0
-  if file $(realpath $path) |
-    grep -qe 'text' -e 'Zip archive' -e 'gzip compressed'
-  then
-    vim -b $path
+  path="$(find $dir -type f -not -path '*/.git*' | fzf | xargs -r realpath)"
+  if [ -z "$path" ]; then
+    return 0
+  elif file "$path" | grep -q '\(text\|Zip archive\|gzip compressed\)'; then
+    vim -b "$path"
   else
     _print_error "$path is not a text file"
     return 1
