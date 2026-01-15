@@ -11,10 +11,8 @@ alias rp='realpath'
 alias vi='vim'
 alias attach='tmux new -As cachy'
 
-# Sudo
+# System
 alias pacman='sudo pacman'
-
-# Pacman
 alias rmpkg='sudo pacman -Rsn'
 alias cleanch='sudo pacman -Scc'
 alias fixpacman='sudo rm /var/lib/pacman/db.lck'
