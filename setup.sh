@@ -70,6 +70,7 @@ device_name="${1:?}"
 
 declare -A config_dirs
 config_dirs['sshd_config.d']='/etc/ssh'
+config_dirs['share']="$HOME/.local"
 
 cd "$HOME/git/dotfiles/$device_name" && git checkout main && git pull || exit 99
 
@@ -101,7 +102,8 @@ fi
 
 for c in "${!config_dirs[@]}"; do
   [ -d "$c" ] || continue
-  $([ -w "${config_dirs[$c]}" ] || echo 'sudo') cp $c/* ${config_dirs[$c]}/$c ||
+  $([ -w "${config_dirs[$c]}" ] || echo 'sudo') \
+    rsync -avz $c/* ${config_dirs[$c]}/$c ||
     {
       echo "Failed to copy ${config_dirs[$c]} files" >&2
       exit 96
