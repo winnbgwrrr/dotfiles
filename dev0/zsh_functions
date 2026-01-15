@@ -1,0 +1,88 @@
+# .zsh_functions
+
+_notes() {
+  note_file="${1:-general}"
+  vim ~/git/notes/$note_file.md
+}
+
+_alias_lookup() {
+  sed "/^alias/!d;s/alias \(\S\+\)=\(['\"].*['\"]\)\(.*\)/\1 \2 '\3'/" \
+    ~/.zsh_aliases | xargs printf '%-12s\t%s %s\n' | fzf \
+    --header 'Select an Alias' --layout=reverse --height 40% --accept-nth 1 |
+    read cmd
+  [ -z "$cmd" ] && return 1
+  print -z "$cmd"
+}
+
+_git_push() {
+  if [ "$1" != '--force' ]; then
+    local_branch="${1:-$(git symbolic-ref --short -q HEAD ||
+      git rev-parse HEAD)}"
+    if [ "$local_branch" = 'main' ]; then
+      local_branch=''
+      vared -p "Enter a name for the local branch: " local_branch
+    fi
+    git checkout -B $local_branch || return 1
+  fi
+  git ls-files --others --exclude-standard |
+    fzf --header 'Select Files to Add' --multi --layout=reverse \
+    --height 40% --exit-0 | xargs -r git add
+  git commit -a
+  git push || return 2
+}
+
+_fzf_vim() {
+  local dir path
+  dir="${1:-$HOME}"
+  path="$(find $dir -type f -not -path '*/.git*' | fzf | xargs -r realpath)"
+  if [ -z "$path" ]; then
+    return 0
+  elif file "$path" | grep -q '\(text\|Zip archive\|gzip compressed\)'; then
+    vim -b "$path"
+  else
+    _print_error "$path is not a text file"
+    return 1
+  fi
+}
+
+_update_mini_ip() {
+  ip='192.168.68.'
+  vared -p 'Mini IP: ' ip
+  sed -i "/^Host R-Mini-s/,/^\s\+HostName /s/^\(\s\+HostName \).*/\1$ip/" \
+    ~/.ssh/config
+}
+
+_home() {
+  if [ -z "$TMUX" ]; then
+    cd ~
+  else
+    cd ${workspaces['$(tmux display-message -p '#W')']}
+  fi
+  zle accept-line
+}
+
+_tmux_window() {
+  local arg
+  arg="${1:?}"
+  [ -z "${workspaces['$arg']}" ] && return 1
+  if [ -z "$TMUX" ] || [ "$arg" = "$(tmux display-message -p '#W')" ]; then
+    cd "${workspaces['$arg']}"
+  else
+    tmux new-window -S -n "$arg" -c "${workspaces['$arg']}"
+  fi
+}
+
+_detach_tmux_client() {
+  tmux list-client | fzf --header 'Select a Client to Detach' \
+    --layout=reverse --height 40% --accept-nth 2 --exit-0 |
+    xargs -r tmux detach-client -s
+}
+
+_steam_launch_options() {
+  if [ "$1" = '--auto' ]; then
+    steam_opts='-autoconfig'
+  else
+    steam_opts='gamescope -b -w 1920 -W 2560 -h 1080 -H 1440 -e -- %command%'
+  fi
+  wl-copy -- "$steam_opts"
+}

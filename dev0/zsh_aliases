@@ -1,0 +1,56 @@
+# .zsh_aliases
+
+echo "$0"
+
+# General
+alias ls='eza'
+alias lst='ls -lh --group-directories-first --icons=auto'
+alias lstd='lst -D'
+alias lat='lst -a'
+alias rp='realpath'
+alias vi='vim'
+alias attach='tmux new -As cachy'
+
+# Sudo
+alias pacman='sudo pacman'
+
+# Pacman
+alias rmpkg='sudo pacman -Rsn'
+alias cleanch='sudo pacman -Scc'
+alias fixpacman='sudo rm /var/lib/pacman/db.lck'
+alias update='sudo pacman -Syu'
+alias cleanup='sudo pacman -Rsn $(pacman -Qtdq)' # Cleanup orphaned packages
+alias rip='expac --timefmt="%Y-%m-%d %T" "%l\t%n %v" | sort | tail -200 | nl' # Recent installed packages
+
+# Workspaces
+alias work='_tmux_window work'
+alias bin='_tmux_window bin'
+alias scripts='_tmux_window scripts'
+alias dotfiles='_tmux_window dotfiles'
+
+# Functions
+alias notes='_notes'
+alias al='_alias_lookup'
+alias fvim='_fzf_vim'
+alias detach='_detach_tmux_client'
+
+# Scripts
+alias pw='passwordmanager.sh'
+alias newsh='new_script.sh'
+alias newws='setup_workspace.sh'
+alias sw='split_window.sh'
+alias vgrep='visual_grep.sh'
+alias explore='explore.sh'
+
+# Git
+alias pull='git pull'
+alias push='_git_push'
+alias gl='git log --pretty=oneline'
+
+# Remote
+alias mini='ssh -q R-Mini-s'
+alias upip='_update_mini_ip'
+
+# Steam
+alias get_auto='_steam_launch_options --auto'
+alias get_gs='_steam_launch_options'
