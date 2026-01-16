@@ -71,6 +71,7 @@ device_name="${1:?}"
 declare -A config_dirs
 config_dirs['sshd_config.d']='/etc/ssh'
 config_dirs['share']="$HOME/.local"
+config_dirs['config']="$HOME"
 
 cd "$HOME/git/dotfiles/$device_name" && git checkout main && git pull || exit 99
 

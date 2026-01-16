@@ -16,3 +16,4 @@ set keymap vi-insert
 "\e[B": history-search-forward
 "\e[C": forward-char
 "\e[D": backward-char
+"\C-h": '_home;_reset_prompt\n'
