@@ -27,9 +27,6 @@ alias bin='_tmux_window bin'
 alias scripts='_tmux_window scripts'
 alias dotfiles='_tmux_window dotfiles'
 
-# Sudo
-alias pacman='sudo pacman'
-
 # Scripts
 alias newsh='new_script.sh'
 alias newws='setup_workspace.sh'
@@ -48,7 +45,6 @@ alias gclean='_git_clean'
 alias gdn='_gen_dev_note'
 alias gbs='_git_branch_selector'
 alias detach='_detach_tmux_client'
-alias espa='_enable_sshd_password_auth'
 
 # Git
 alias gl='git log --pretty=oneline'

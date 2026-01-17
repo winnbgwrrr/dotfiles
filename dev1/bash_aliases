@@ -27,9 +27,6 @@ alias bin='_tmux_window bin'
 alias scripts='_tmux_window scripts'
 alias dotfiles='_tmux_window dotfiles'
 
-# Sudo
-alias pacman='sudo pacman'
-
 # Scripts
 alias newsh='new_script.sh'
 alias newws='setup_workspace.sh'
