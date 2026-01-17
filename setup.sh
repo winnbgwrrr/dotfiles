@@ -124,7 +124,7 @@ done
     fi
     [ -d "$script_dir" ] || git clone "$script_url" "$script_dir"
     cd "$script_dir" && git checkout main && git pull
-    $HOME/bin/patch_bin.sh
+    $script_dir/bash/patch_bin.sh
   }
 
 echo 'Run the following commands to complete setup:'
