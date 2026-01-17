@@ -6,3 +6,6 @@ bash_functions
 inputrc
 vimrc
 tmux.conf
+.config/kscreenlockerrc
+.config/plasmarc
+.config/powerdevilrc

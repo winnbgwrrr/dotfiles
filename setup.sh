@@ -71,7 +71,6 @@ device_name="${1:?}"
 declare -A config_dirs
 config_dirs['sshd_config.d']='/etc/ssh'
 config_dirs['share']="$HOME/.local"
-config_dirs['config']="$HOME"
 
 cd "$HOME/git/dotfiles/$device_name" && git checkout main && git pull || exit 99
 
@@ -106,26 +105,25 @@ for c in "${!config_dirs[@]}"; do
   $([ -w "${config_dirs[$c]}" ] || echo 'sudo') \
     rsync -avz $c/* ${config_dirs[$c]}/$c ||
     {
-      echo "Failed to copy ${config_dirs[$c]} files" >&2
+      echo "Failed to sync ${config_dirs[$c]} files" >&2
       exit 96
     }
 done
 
-[ -d "$HOME/bin" ] ||
-  {
-    mkdir "$HOME/bin"
-    cp *.sh "$HOME/bin"
-    chmod 750 $HOME/bin/*.sh
-    script_dir="$HOME/git/shell_scripts"
-    if [ -d "$HOME/.ssh" ]; then
-      script_url='git@github.com:winnbgwrrr/shell-scripts.git'
-    else
-      script_url='https://github.com/winnbgwrrr/shell-scripts.git'
-    fi
-    [ -d "$script_dir" ] || git clone "$script_url" "$script_dir"
-    cd "$script_dir" && git checkout main && git pull
-    $script_dir/bash/patch_bin.sh
-  }
+if [ ! -d "$HOME/bin" ]; then
+  mkdir "$HOME/bin"
+  cp *.sh "$HOME/bin"
+  chmod 750 $HOME/bin/*.sh
+  script_dir="$HOME/git/shell_scripts"
+  if [ -d "$HOME/.ssh" ]; then
+    script_url='git@github.com:winnbgwrrr/shell-scripts.git'
+  else
+    script_url='https://github.com/winnbgwrrr/shell-scripts.git'
+  fi
+  [ -d "$script_dir" ] || git clone "$script_url" "$script_dir"
+  cd "$script_dir" && git checkout main && git pull
+  $script_dir/bash/patch_bin.sh
+fi
 
 echo 'Run the following commands to complete setup:'
 echo 'source ~/.bash_profile'
