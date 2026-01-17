@@ -177,5 +177,6 @@ _sshd_auth() {
 _enable_sshd_password_auth() {
   trap '_sshd_auth --publickey' INT TERM EXIT
   _sshd_auth --password
-  sleep 120
+  sleep 90
+  _sshd_auth --publickey
 }
