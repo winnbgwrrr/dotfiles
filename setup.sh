@@ -26,9 +26,9 @@ _find() {
 _create_symlink() {
   [ -z "$1" ] || [ -z "$2" ] && return 1
   [ -d "$1" ] && return 0
-  if [ -h "$2" ] && [ "$1" -ef "$2" ]; then
+  if [ "$1" -ef "$2" ]; then
     return 0
-  elif [ -f "$2" ] || [ ! -e "$2" ]; then
+  elif [ -f "$2" ] || [ -h "$2" ]; then
     rm "$2"
   fi
   ln -s "$1" "$2"
