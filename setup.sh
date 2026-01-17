@@ -117,7 +117,11 @@ done
     cp *.sh "$HOME/bin"
     chmod 750 $HOME/bin/*.sh
     script_dir="$HOME/git/shell_scripts"
-    script_url='git@github.com:winnbgwrrr/shell-scripts.git'
+    if [ -d "$HOME/.ssh" ]; then
+      script_url='git@github.com:winnbgwrrr/shell-scripts.git'
+    else
+      script_url='https://github.com/winnbgwrrr/shell-scripts.git'
+    fi
     [ -d "$script_dir" ] || git clone "$script_url" "$script_dir"
     cd "$script_dir" && git checkout main && git pull
     $HOME/bin/patch_bin.sh
