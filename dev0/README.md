@@ -1,2 +1,2 @@
 ## To Do
- - create dot.files
+ - create link.files

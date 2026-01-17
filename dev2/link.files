@@ -6,3 +6,5 @@ bash_functions
 inputrc
 vimrc
 tmux.conf
+config/konsolerc
+local/share/konsole/default.profile

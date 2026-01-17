@@ -6,6 +6,8 @@ bash_functions
 inputrc
 vimrc
 tmux.conf
+config/konsolerc
 config/kscreenlockerrc
 config/plasmarc
 config/powerdevilrc
+local/share/konsole/default.profile

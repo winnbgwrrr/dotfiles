@@ -2,7 +2,7 @@
 ################################################################################
 # Script:   setup.sh                                                           #
 # Function:                                                                    #
-# Usage:    setup.sh [-h]                                                      #
+# Usage:    setup.sh [-h] device                                               #
 #                                                                              #
 # Author: Robert Winslow                                                       #
 # Date written: 07-08-2025                                                     #
@@ -10,7 +10,7 @@
 ################################################################################
 . ~/bin/common.functions
 
-USAGE_STR='[-h] [remote_aliases]'
+USAGE_STR='[-h] device'
 
 _find() {
   if [ -f "$1" ]; then
@@ -72,33 +72,26 @@ declare -A config_dirs
 config_dirs['sshd_config.d']='/etc/ssh'
 config_dirs['share']="$HOME/.local"
 
+if [ ! -f "$HOME/.gitconfig" ]; then
+  git config --global core.editor vim
+  git config --global init.defaultBranch main
+  git config --global push.default current
+  git config --global pull.rebase true
+  read -p 'Git Configuration - Enter name: ' name
+  git config --global user.name "$name"
+  read -p 'Git Configuration - Enter email: ' email
+  git config --global user.email "$email"
+fi
+
 cd "$HOME/git/dotfiles/$device_name" && git checkout main && git pull || exit 99
 
-while read dotfile; do
-  _create_symlink "$(_find $dotfile)" "$HOME/.$dotfile" ||
+while read linkfile; do
+  _create_symlink "$(_find $linkfile)" "$HOME/.$linkfile" ||
     {
-      echo "Failed to create symlink for $dotfile" >&2
+      echo "Failed to create symlink for $linkfile" >&2
       exit 98
     }
-done <dot.files
-
-if [ -f "$HOME/.config/konsolerc" ]; then
-  file='konsolerc'
-  _create_symlink "$(_find $file)" "$HOME/.config/$file" ||
-    {
-      echo "Failed to create symlink for $file" >&2
-      exit 97
-    }
-  file="default.profile"
-  _create_symlink "$(_find $file)" "$HOME/.local/share/konsole/$file" ||
-    {
-      echo "Failed to create symlink for $file" >&2
-      exit 97
-    }
-  file='Vapor.colorscheme'
-  [ -f "/usr/share/konsole/$file" ] ||
-    cp "../default/$file" "$HOME/.local/share/konsole"
-fi
+done <link.files
 
 for c in "${!config_dirs[@]}"; do
   [ -d "$c" ] || continue
@@ -106,7 +99,7 @@ for c in "${!config_dirs[@]}"; do
     rsync -avz $c/* ${config_dirs[$c]}/$c ||
     {
       echo "Failed to sync ${config_dirs[$c]} files" >&2
-      exit 96
+      exit 97
     }
 done
 
