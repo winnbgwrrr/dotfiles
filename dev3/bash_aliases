@@ -34,8 +34,10 @@ alias vgrep='visual_grep.sh'
 alias explore='explore.sh'
 alias sw='split_window.sh'
 
+# Remotes
+alias mini='ssh -q R-Mini-s'
+
 # Functions
-alias notes='_notes'
 alias exit='_exit'
 alias al='_alias_lookup'
 alias fvim='_fzf_vim'
@@ -45,6 +47,7 @@ alias gclean='_git_clean'
 alias gdn='_gen_dev_note'
 alias gbs='_git_branch_selector'
 alias detach='_detach_tmux_client'
+alias minip='_update_ssh_ip R-Mini-s'
 
 # Git
 alias gl='git log --pretty=oneline'

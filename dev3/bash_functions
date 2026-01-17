@@ -8,76 +8,6 @@ _ps1_branch() {
     echo "($(git rev-parse --short HEAD)...)"))"
 }
 
-_notes() {
-  local usrin lastopt
-  printf '%s\n' 'NOTES'
-  declare -a optslist
-  optslist=('Select one of the following options:')
-  optslist+=('ssh cat')
-  optslist+=('change shell')
-  optslist+=('sed block')
-  optslist+=('open ssl')
-  optslist+=('shuf')
-  optslist+=('passwd expiration')
-  optslist+=('tmux pane formats')
-  optslist+=('open history in vim')
-  optslist+=('run command in history')
-  optslist+=('output command in history')
-  optslist+=('cleanup local branches')
-  _display_menu "${optslist[@]}"
-  lastopt=$((${#optslist[@]}-1))
-  read -p "Enter Choice [1-$lastopt] " usrin
-  tput setaf '2'
-  case "$usrin" in
-    1)
-      printf '\n\t%s\n\n' '<<stdout>> | ssh usr@srv "cat > <file>"'
-      ;;
-    2)
-      printf '\n\t%s\n\n' 'chsh -s /bin/bash'
-      ;;
-    3)
-      printf '\n\t%s\n\n' "sed -n '/<begin>/,/<end>/p' <file>"
-      ;;
-    4)
-      printf '\n\t%s\n' 'openssl genrsa -out ~/.ssl/id_rsa 4096'
-      printf '\t%s\n' 'openssl rsa -in ~/.ssl/id_rsa -pubout -out ~/.ssl/id_rsa.pub'
-      printf '\t%s\n' 'echo "<secret>" | openssl rsautl -encrypt -inkey ~/.ssl/rsa_key.pub -pubin -out <encrypted.file>'
-      printf '\t%s\n\n' 'openssl rsautl -decrypt -inkey ~/.ssl/id_rsa -in <encrypted.file>'
-      ;;
-    5)
-      printf '\n\t%s\n\n' 'shuf -n <file> ><output>'
-      ;;
-    6)
-      printf '\n\t%s' 'chage -l $USER'
-      printf '\n\t%s\n\n' "SELECT username, expiry_date FROM dba_users WHERE username = '<username>';"
-      ;;
-    7)
-      printf '\n\t%s\n\n' "tmux list-panes -F '#{pane_index} #{pane_active} #{pane_pid}'"
-      ;;
-    8)
-      printf '\n\t%s\n\n' 'fc <num> [num]'
-      ;;
-    9)
-      printf '\n\t%s\n\n' '!<!|num>'
-      ;;
-    10)
-      printf '\n\t%s\n\n' 'history -p \!<num>'
-      ;;
-    11)
-      printf '\n\t%s' "git branch --merged=main | grep -v 'main' | xargs git branch -d"
-      printf '\n\t%s\n\n' 'git fetch --prune'
-      ;;
-    [Qq]*)
-      echo
-      ;;
-    *)
-      echo
-      _print_error '%s\n' "$usrin $NOT_RECOGNIZED_OPTION"
-      ;;
-  esac
-  tput setaf '7'
-}
-
 _alias_lookup() {
   cmd="$(sed "/^alias/!d;s/alias \(\S\+\)=\(['\"].*['\"]\)\(.*\)/\1 \2 '\3'/" \
     ~/.bash_aliases | xargs printf '%-12s\t%s %s\n' | fzf \
@@ -161,21 +91,9 @@ _exit() {
   fi
 }
 
-_sshd_auth() {
-  conf_file='/etc/ssh/sshd_config.d/20-force_publickey_auth.conf'
-  if [ "$1" = '--password' ]; then
-    script='s/no/yes/;s/publickey/password/'
-  elif [ "$1" = '--publickey' ]; then
-    script='s/yes/no/;s/password/publickey/'
-  else
-    return 1
-  fi
-  sudo sed -i "$script" $conf_file
-  sudo systemctl restart sshd.service
-}
-
-_enable_sshd_password_auth() {
-  trap '_sshd_auth --publickey' INT TERM EXIT
-  _sshd_auth --password
-  sleep 120
-}
+_update_ssh_ip() {
+  host="${1:?}"
+  read -e -p 'IP: ' -i '192.168.68.' ip
+  sed -i "/^Host $host/,/^\s\+HostName /s/^\(\s\+HostName \).*/\1$ip/" \
+    ~/.ssh/config
+ }

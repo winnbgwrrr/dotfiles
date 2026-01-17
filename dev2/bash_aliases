@@ -33,7 +33,7 @@ alias explore='explore.sh'
 alias sw='split_window.sh'
 
 # Remotes
-alias mini='ssh R-Mini-s'
+alias mini='ssh -q R-Mini-s'
 
 # Functions
 alias exit='_exit'
