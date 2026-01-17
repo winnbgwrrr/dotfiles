@@ -26,9 +26,9 @@ _find() {
 _create_symlink() {
   [ -z "$1" ] || [ -z "$2" ] && return 1
   [ -d "$1" ] && return 0
-  if [ -h "$2" ] && [ "$1" -ef "$2" ]; then
+  if [ "$1" -ef "$2" ]; then
     return 0
-  elif [ -f "$2" ] || [ ! -e "$2" ]; then
+  elif [ -f "$2" ] || [ -h "$2" ]; then
     rm "$2"
   fi
   ln -s "$1" "$2"
@@ -117,10 +117,14 @@ done
     cp *.sh "$HOME/bin"
     chmod 750 $HOME/bin/*.sh
     script_dir="$HOME/git/shell_scripts"
-    script_url='git@github.com:winnbgwrrr/shell-scripts.git'
+    if [ -d "$HOME/.ssh" ]; then
+      script_url='git@github.com:winnbgwrrr/shell-scripts.git'
+    else
+      script_url='https://github.com/winnbgwrrr/shell-scripts.git'
+    fi
     [ -d "$script_dir" ] || git clone "$script_url" "$script_dir"
     cd "$script_dir" && git checkout main && git pull
-    $HOME/bin/patch_bin.sh
+    $script_dir/bash/patch_bin.sh
   }
 
 echo 'Run the following commands to complete setup:'
