@@ -1,0 +1,181 @@
+# .bash_functions
+
+source "$HOME/bin/common.functions"
+
+_ps1_branch() {
+  git rev-parse 2>/dev/null || return 0
+  echo " ($(git symbolic-ref --short -q HEAD ||
+    echo "($(git rev-parse --short HEAD)...)"))"
+}
+
+_notes() {
+  local usrin lastopt
+  printf '%s\n' 'NOTES'
+  declare -a optslist
+  optslist=('Select one of the following options:')
+  optslist+=('ssh cat')
+  optslist+=('change shell')
+  optslist+=('sed block')
+  optslist+=('open ssl')
+  optslist+=('shuf')
+  optslist+=('passwd expiration')
+  optslist+=('tmux pane formats')
+  optslist+=('open history in vim')
+  optslist+=('run command in history')
+  optslist+=('output command in history')
+  optslist+=('cleanup local branches')
+  _display_menu "${optslist[@]}"
+  lastopt=$((${#optslist[@]}-1))
+  read -p "Enter Choice [1-$lastopt] " usrin
+  tput setaf '2'
+  case "$usrin" in
+    1)
+      printf '\n\t%s\n\n' '<<stdout>> | ssh usr@srv "cat > <file>"'
+      ;;
+    2)
+      printf '\n\t%s\n\n' 'chsh -s /bin/bash'
+      ;;
+    3)
+      printf '\n\t%s\n\n' "sed -n '/<begin>/,/<end>/p' <file>"
+      ;;
+    4)
+      printf '\n\t%s\n' 'openssl genrsa -out ~/.ssl/id_rsa 4096'
+      printf '\t%s\n' 'openssl rsa -in ~/.ssl/id_rsa -pubout -out ~/.ssl/id_rsa.pub'
+      printf '\t%s\n' 'echo "<secret>" | openssl rsautl -encrypt -inkey ~/.ssl/rsa_key.pub -pubin -out <encrypted.file>'
+      printf '\t%s\n\n' 'openssl rsautl -decrypt -inkey ~/.ssl/id_rsa -in <encrypted.file>'
+      ;;
+    5)
+      printf '\n\t%s\n\n' 'shuf -n <file> ><output>'
+      ;;
+    6)
+      printf '\n\t%s' 'chage -l $USER'
+      printf '\n\t%s\n\n' "SELECT username, expiry_date FROM dba_users WHERE username = '<username>';"
+      ;;
+    7)
+      printf '\n\t%s\n\n' "tmux list-panes -F '#{pane_index} #{pane_active} #{pane_pid}'"
+      ;;
+    8)
+      printf '\n\t%s\n\n' 'fc <num> [num]'
+      ;;
+    9)
+      printf '\n\t%s\n\n' '!<!|num>'
+      ;;
+    10)
+      printf '\n\t%s\n\n' 'history -p \!<num>'
+      ;;
+    11)
+      printf '\n\t%s' "git branch --merged=main | grep -v 'main' | xargs git branch -d"
+      printf '\n\t%s\n\n' 'git fetch --prune'
+      ;;
+    [Qq]*)
+      echo
+      ;;
+    *)
+      echo
+      _print_error '%s\n' "$usrin $NOT_RECOGNIZED_OPTION"
+      ;;
+  esac
+  tput setaf '7'
+}
+
+_alias_lookup() {
+  cmd="$(sed "/^alias/!d;s/alias \(\S\+\)=\(['\"].*['\"]\)\(.*\)/\1 \2 '\3'/" \
+    ~/.bash_aliases | xargs printf '%-12s\t%s %s\n' | fzf \
+    --header 'Select an Alias' --layout=reverse --height 40% --accept-nth 1)"
+  [ -z "$cmd" ] && return 1
+  read -p "> $cmd " args
+  eval "$cmd $args"
+}
+
+_git_push() {
+  if [ "$1" != '--force' ]; then
+    local_branch="${1:-$(_git_branch)}"
+    if [ "$local_branch" = 'main' ]; then
+      read -p "Enter a name for the local branch: " local_branch
+    fi
+    git checkout -B $local_branch || return 1
+  fi
+  git ls-files --others --exclude-standard |
+    fzf --header 'Select Files to Add' --multi --layout=reverse \
+    --height 40% --exit-0 | xargs -r git add
+  git commit -a
+  git push || return 2
+}
+
+_fzf_vim() {
+  local dir path
+  dir="${1:-$HOME}"
+  path="$(find $dir -type f -not -path '*/.git*' | fzf | xargs -r realpath)"
+  if [ -z "$path" ]; then
+    return 0
+  elif file "$path" | grep -q '\(text\|Zip archive\|gzip compressed\)'; then
+    vim -b "$path"
+  else
+    _print_error "$path is not a text file"
+    return 1
+  fi
+}
+
+_reset_prompt() {
+  local n
+  n=${PS1@P}
+  n=${n//[^$'\n']}
+  n=${#n}
+  tput cuu $((n + 1))
+  tput ed
+}
+
+_home() {
+  if [ -z "$TMUX" ]; then
+    cd ~
+  else
+    cd ${workspaces[$(tmux display-message -p '#W')]}
+  fi
+}
+
+_tmux_window() {
+  local arg
+  arg="${1:?}"
+  [ -z "${workspaces[$arg]}" ] && return 1
+  if [ -z "$TMUX" ] || [ "$arg" = "$(tmux display-message -p '#W')" ]; then
+    cd "${workspaces[$arg]}"
+  else
+    tmux new-window -S -n "$arg" -c "${workspaces[$arg]}"
+  fi
+}
+
+_detach_tmux_client() {
+  tmux list-client | fzf --header 'Select a Client to Detach' \
+    --layout=reverse --height 40% --accept-nth 2 --exit-0 |
+    xargs -r tmux detach-client -s
+}
+
+_exit() {
+  [ -z "$TMUX" ] && exit
+  if [ $(tmux list-panes | wc -l) -gt 1 ]; then
+    tmux kill-pane
+  elif [ $(tmux display-message -p '#I') -gt 0 ]; then
+    tmux kill-window
+  else
+    tmux detach
+  fi
+}
+
+_sshd_auth() {
+  conf_file='/etc/ssh/sshd_config.d/20-force_publickey_auth.conf'
+  if [ "$1" = '--password' ]; then
+    script='s/no/yes/;s/publickey/password/'
+  elif [ "$1" = '--publickey' ]; then
+    script='s/yes/no/;s/password/publickey/'
+  else
+    return 1
+  fi
+  sudo sed -i "$script" $conf_file
+  sudo systemctl restart sshd.service
+}
+
+_enable_sshd_password_auth() {
+  trap '_sshd_auth --publickey' INT TERM EXIT
+  _sshd_auth --password
+  sleep 120
+}

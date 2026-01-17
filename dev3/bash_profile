@@ -1,0 +1,21 @@
+# .bash_profile
+
+test -f ~/.profile && . ~/.profile
+test -f ~/.bashrc && . ~/.bashrc
+
+stty -ixon
+shopt -s autocd
+
+export PROMPT_COMMAND="history -a; history -n"
+export HISTIGNORE='clear*:_home*:exit:pwd'
+
+declare -a ps1c
+ps1c[0]='\e[0;0m'
+ps1c[1]='\e[38;5;147m'
+ps1c[2]='\e[38;5;114m'
+ps1c[3]='\e[38;5;221m'
+PS1="\n\[${ps1c[1]}\]\u@\h \[${ps1c[2]}\]\$PWD\[${ps1c[3]}\]\$(_ps1_branch)\n"
+PS1="$PS1\[${ps1c[3]}\]\$\[${ps1c[0]}\] "
+unset ps1c
+
+fastfetch
