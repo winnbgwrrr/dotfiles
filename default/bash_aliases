@@ -4,6 +4,7 @@
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
+alias .....='cd ../../../..'
 alias lat='ls -lat'
 alias lst='ls -lt'
 alias lstd='ls -ltd'
@@ -35,13 +36,15 @@ alias notes='_notes'
 alias exit='_exit'
 alias al='_alias_lookup'
 alias fvim='_fzf_vim'
+
+# Tmux
+alias detach='_detach_tmux_client'
+
+# Git
 alias gpull='_git_pull'
 alias gpush='_git_push'
 alias gclean='_git_clean'
 alias gdn='_gen_dev_note'
 alias gbs='_git_branch_selector'
-alias detach='_detach_tmux_client'
-
-# Git
 alias gl='git log --pretty=oneline'
 alias gll='git log -1 --pretty=oneline'
