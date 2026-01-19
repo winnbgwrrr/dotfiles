@@ -8,6 +8,7 @@ alias .....='cd ../../../..'
 alias lat='ls -lat'
 alias lst='ls -lt'
 alias lstd='ls -ltd'
+alias newest='ls -t | head -1'
 alias rp='realpath'
 alias vi='vim -b'
 
@@ -41,6 +42,8 @@ alias exit='_exit'
 alias al='_alias_lookup'
 alias fvim='_fzf_vim'
 alias minip='_update_ssh_ip R-Mini-s'
+alias fud='_fzf_unmounted_device'
+alias cbu='_create_bootable_usb'
 
 # Tmux
 alias detach='_detach_tmux_client'

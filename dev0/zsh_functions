@@ -6,11 +6,10 @@ _notes() {
 }
 
 _alias_lookup() {
-  sed "/^alias/!d;s/alias \(\S\+\)=\(['\"].*['\"]\)\(.*\)/\1 \2 '\3'/" \
-    ~/.zsh_aliases | xargs printf '%-12s\t%s %s\n' | fzf \
-    --header 'Select an Alias' --layout=reverse --height 40% --accept-nth 1 |
-    read cmd
-  [ -z "$cmd" ] && return 1
+  sed "/^alias/!d;s/alias \(\S\+\)=['\"]\(.*\)['\"]\(.*\)/\1::\2::\3/" \
+    ~/.zsh_aliases | column -s '::' -t | fzf  --header 'Select an Alias' \
+    --layout=reverse --height 40% --accept-nth 1 | read cmd
+  [ -z "$cmd" ] && return 0
   print -z "$cmd"
 }
 
@@ -76,6 +75,22 @@ _detach_tmux_client() {
   tmux list-client | fzf --header 'Select a Client to Detach' \
     --layout=reverse --height 40% --accept-nth 2 --exit-0 |
     xargs -r tmux detach-client -s
+}
+
+_fzf_unmounted_device() {
+  lsblk -JT -o PATH,SIZE,MODEL,MOUNTPOINT -Q 'MODEL !~ "Optix Driver"' |
+    jq --raw-output0 '.blockdevices[] | del(select(.mountpoint!=null or
+      .children[]?.mountpoint!=null)) // empty | .path, .size, .model' |
+    xargs -0 -n 3 | sed 's/\s/::/;s/\s/::/' | column -s '::' -t | fzf \
+    --header 'Select Device' --layout=reverse --height 40% --accept-nth 1
+}
+
+_create_bootable_usb() {
+  _fzf_unmounted_device | read dev
+  [ -z "$dev" ] && return 0
+  vared -p 'Enter path of iso: ' iso_path
+  [ -z "$iso_path" ] && return 0
+  sudo dd bs=4M if=$iso_path of=$dev status=progress oflag=sync
 }
 
 _steam_launch_options() {
