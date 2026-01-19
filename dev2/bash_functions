@@ -99,10 +99,12 @@ _update_ssh_ip() {
  }
 
 _fzf_unmounted_device() {
+  local filter
+  filter='.blockdevices[] |
+    del(select(.mountpoint!=null or .children[]?.mountpoint!=null)) // empty |
+    .path + "::", .size + "::", .model'
   lsblk -JT -o PATH,SIZE,MODEL,MOUNTPOINT -Q 'MODEL !~ "Optix Driver"' |
-    jq --raw-output0 '.blockdevices[] | del(select(.mountpoint!=null or
-      .children[]?.mountpoint!=null)) // empty | .path, .size, .model' |
-    xargs -0 -n 3 | sed 's/\s/::/;s/\s/::/' | column -s '::' -t | fzf \
+    jq --raw-output0 "$filter" | xargs -0 -n 3 | column -s '::' -t | fzf \
     --header 'Select Device' --layout=reverse --height 40% --accept-nth 1
 }
 
