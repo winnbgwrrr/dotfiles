@@ -97,21 +97,3 @@ _update_ssh_ip() {
   sed -i "/^Host $host/,/^\s\+HostName /s/^\(\s\+HostName \).*/\1$ip/" \
     ~/.ssh/config
  }
-
-_fzf_unmounted_device() {
-  local filter
-  filter='.blockdevices[] |
-    del(select(.mountpoint!=null or .children[]?.mountpoint!=null)) // empty |
-    .path + "::", .size + "::", .model'
-  lsblk -JT -o PATH,SIZE,MODEL,MOUNTPOINT -Q 'MODEL !~ "Optix Driver"' |
-    jq --raw-output0 "$filter" | xargs -0 -n 3 | column -s '::' -t | fzf \
-    --header 'Select Device' --layout=reverse --height 40% --accept-nth 1
-}
-
-_create_bootable_usb() {
-  _fzf_unmounted_device | read dev
-  [ -z "$dev" ] && return 0
-  vared -p 'Enter path of iso: ' iso_path
-  [ -z "$iso_path" ] && return 0
-  sudo dd bs=4M if=$iso_path of=$dev status=progress oflag=sync
-}
