@@ -2,7 +2,7 @@
 
 ## Fresh Install
 ``` pacman
-sudo pacman -S vim tmux fastfetch fzf wl-clipboard ttf-intone-nerd eza
+sudo pacman -S vim tmux fastfetch fzf wl-clipboard ttf-intone-nerd eza jq
 ```
 
 ``` yay

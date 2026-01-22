@@ -24,6 +24,7 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 ```
 
+Need jq
 ## SSH Keys
 ```
 ssh-keygen -t ed25519
