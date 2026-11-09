@@ -139,8 +139,81 @@ _tmux_window() {
   [ -z "${workspaces[$arg]}" ] && return 1
   if [ -z "$TMUX" ] || [ "$arg" = "$(tmux display-message -p '#W')" ]; then
     cd "${workspaces[$arg]}"
+  elif tmux list-windows -F '#W' | grep -q "^$arg$"; then
+    tmux select-window -t "$arg"
   else
-    tmux new-window -S -n "$arg" -c "${workspaces[$arg]}"
+    tmux new-window -n "$arg" -c "${workspaces[$arg]}"
+  fi
+}
+
+_change_directory() {
+  if [ -n "$1" ] && [ -n "$2" ]; then
+    command cd $(sed "s|$1|$2|" <<<"$PWD")
+  else
+    command cd $*
+  fi
+}
+
+_get_destination() {
+  local fzf_opts destination
+  fzf_opts='--layout=reverse --height 40% --exit-0'
+  if [ $# -gt 0 ]; then
+    destination="$1"
+    for d in "${destinations[@]}"; do
+      if [ "$destination" = "$d" ]; then
+        echo "$destination"
+        return 0
+      elif [ "$destination" = "${d/@localhost/}" ]; then
+        echo "$d"
+        return 0
+      fi
+    done
+    fzf_opts="$fzf_opts --query $destination"
+  fi
+  printf '%s\n' "${destinations[@]}" | fzf $fzf_opts || return 1
+}
+
+_ssh() {
+  local opts destination
+  while [[ $# -gt 0 ]]; do
+    if [[ "$1" =~ ^-[BbcDEeFIiJLlmOopQRSWw] ]]; then
+      opts="${opts+$opts }$1 $2"
+      shift; shift
+    elif [[ "$1" =~ ^- ]]; then
+      opts="${opts+$opts }$1"
+      shift
+    else
+      destination="${destination+$destination }$1"
+      shift
+    fi
+  done
+  destination="$(_get_destination $destination)" || return 1
+  ssh $opts "$destination"
+}
+
+_new_window_ssh() {
+  local destination window_name
+  destination="$(_get_destination $*)" || return 0
+  if [ -z "$TMUX" ]; then
+    ssh -q "$destination"
+    return 0
+  fi
+  window_name="${destination/@localhost/}"
+  if [ "$window_name" = "$(tmux display-message -p '#W')" ]; then
+    return 0
+  elif tmux list-windows -F '#W' | grep -q "^$window_name$"; then
+    tmux select-window -t "$window_name"
+  else
+    tmux new-window -n "$window_name" "ssh -q $destination"
+  fi
+}
+
+_split_window_ssh() {
+  destination="$(_get_destination $*)" || return 0
+  if [ -z "$TMUX" ]; then
+    ssh -q "$destination"
+  else
+    split_window.sh ssh -q "$destination"
   fi
 }
 
@@ -152,7 +225,7 @@ _detach_tmux_client() {
 
 _exit() {
   [ -z "$TMUX" ] && exit
-  if [ $(tmux list-panes | wc -l) -gt 1 ]; then
+  if [ $(tmux display-message -p '#P') -gt 0 ]; then
     tmux kill-pane
   elif [ $(tmux display-message -p '#I') -gt 0 ]; then
     tmux kill-window
